@@ -29,7 +29,7 @@ func _on_input_event(viewport, event, shape_idx):
 
 func _on_mouse_entered():
 	is_hovered = true
-	modulate = Color(1.2, 1.2, 1.2, 1.0)  # Highlight when hovered
+	modulate = Color(1.0, 1.0, 1.0, 1.0)  # Highlight when hovered
 
 func _on_mouse_exited():
 	is_hovered = false

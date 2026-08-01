@@ -34,6 +34,7 @@ region_rect = Rect2(199.31226, 367.56836, 2948.2407, 1470.6691)
 position = Vector2(57.800285, 315.01212)
 script = ExtResource("3_h2yge")
 room_name = "Radar Equipment Room"
+room_info = "Radar equipment monitoring station"
 connected_rooms = Array[NodePath]([NodePath("../Comms Equipment Room")])
 
 [node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="Rooms/Radar Equipment Room" unique_id=1063617348]
@@ -43,14 +44,15 @@ polygon = PackedVector2Array(-1.8002853, 0.9878845, 274.1997, 0.9878845, 274.199
 modulate = Color(0, 0, 0, 1)
 offset_right = 40.0
 offset_bottom = 23.0
-text = "PUSSY"
+text = "Radar Equipment Room"
 
 [node name="Comms Equipment Room" type="Area2D" parent="Rooms" unique_id=780706477]
 position = Vector2(338, 315)
 script = ExtResource("3_h2yge")
 room_name = "Comms Equipment Room"
+room_info = "Communications equipment storage area"
 room_color = Color(0.38306668, 0.3664034, 0.69585246, 0.3019608)
-connected_rooms = Array[NodePath]([NodePath("../Radar Equipment Room")])
+connected_rooms = Array[NodePath]([NodePath("../Radar Equipment Room"), NodePath("../Exits/Exit")])
 
 [node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="Rooms/Comms Equipment Room" unique_id=1205077735]
 position = Vector2(2, -1)
@@ -65,7 +67,22 @@ curve = SubResource("Curve2D_lquwl")
 
 [node name="Exits" type="Node2D" parent="." unique_id=141045563]
 
-[node name="Node2D" type="Node2D" parent="Exits" unique_id=1875982991]
+[node name="Exit" type="Area2D" parent="Exits" unique_id=1875982991]
+position = Vector2(100, 100)
+script = ExtResource("3_h2yge")
+room_name = "Exit"
+room_info = "Emergency Exit - Click any room to find path here"
+room_color = Color(0.2, 0.8, 0.2, 0.5)
+connected_rooms = Array[NodePath]([NodePath("../Rooms/Comms Equipment Room")])
+
+[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="Exits/Exit" unique_id=1875982992]
+polygon = PackedVector2Array(-20, -20, 20, -20, 20, 20, -20, 20)
+
+[node name="Label" type="Label" parent="Exits/Exit" unique_id=1875982993]
+offset_right = 40.0
+offset_bottom = 23.0
+text = "EXIT"
+modulate = Color(0, 0.5, 0, 1)
 
 [node name="SearchUI" type="Control" parent="." unique_id=877164333]
 layout_mode = 3
