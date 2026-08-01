@@ -1,0 +1,131 @@
+[gd_scene format=3 uid="uid://o3n2qhxv1pe8"]
+
+[ext_resource type="Texture2D" uid="uid://bbfea05b3d0qi" path="res://assets/bg.png" id="1_0xm2m"]
+[ext_resource type="Script" uid="uid://dkhlkn7oflv3v" path="res://camera_2d.gd" id="2_h2yge"]
+[ext_resource type="Script" uid="uid://cyiomqabjkvhy" path="res://room.gd" id="3_h2yge"]
+[ext_resource type="Texture2D" uid="uid://c0pd8pbnhynwj" path="res://icon.svg" id="4_1bvp3"]
+[ext_resource type="Script" uid="uid://dnr2bbj5cv53l" path="res://room_manager.gd" id="4_lquwl"]
+
+[sub_resource type="Curve2D" id="Curve2D_lquwl"]
+_data = {
+"points": PackedVector2Array(0, 0, 0, 0, 0, 0)
+}
+point_count = 1
+
+[node name="Map" type="Node2D" unique_id=1545570361]
+script = ExtResource("4_lquwl")
+
+[node name="Camera2D" type="Camera2D" parent="." unique_id=117667258]
+position = Vector2(1322, 695)
+enabled = false
+zoom = Vector2(0.25, 0.25)
+script = ExtResource("2_h2yge")
+
+[node name="MapSprite" type="Sprite2D" parent="." unique_id=200509777]
+visible = false
+texture = ExtResource("1_0xm2m")
+centered = false
+region_enabled = true
+region_rect = Rect2(199.31226, 367.56836, 2948.2407, 1470.6691)
+
+[node name="Rooms" type="Node2D" parent="." unique_id=423707182]
+
+[node name="Radar Equipment Room" type="Area2D" parent="Rooms" unique_id=576885939]
+position = Vector2(57.800285, 315.01212)
+script = ExtResource("3_h2yge")
+room_name = "Radar Equipment Room"
+connected_rooms = Array[NodePath]([NodePath("../Comms Equipment Room")])
+
+[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="Rooms/Radar Equipment Room" unique_id=1063617348]
+polygon = PackedVector2Array(-1.8002853, 0.9878845, 274.1997, 0.9878845, 274.1997, 232.98788, 550.1997, 232.98788, 550.1997, 368.98788, -1.8002853, 368.98788)
+
+[node name="Label" type="Label" parent="Rooms/Radar Equipment Room" unique_id=1738312495]
+modulate = Color(0, 0, 0, 1)
+offset_right = 40.0
+offset_bottom = 23.0
+text = "PUSSY"
+
+[node name="Comms Equipment Room" type="Area2D" parent="Rooms" unique_id=780706477]
+position = Vector2(338, 315)
+script = ExtResource("3_h2yge")
+room_name = "Comms Equipment Room"
+room_color = Color(0.38306668, 0.3664034, 0.69585246, 0.3019608)
+connected_rooms = Array[NodePath]([NodePath("../Radar Equipment Room")])
+
+[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="Rooms/Comms Equipment Room" unique_id=1205077735]
+position = Vector2(2, -1)
+polygon = PackedVector2Array(0, 2, 268, 2, 268, 230, 0, 230)
+
+[node name="Sprite2D" type="Sprite2D" parent="Rooms/Comms Equipment Room" unique_id=831991972]
+position = Vector2(70, 69)
+texture = ExtResource("4_1bvp3")
+
+[node name="PathCurve" type="Path2D" parent="." unique_id=588811546]
+curve = SubResource("Curve2D_lquwl")
+
+[node name="Exits" type="Node2D" parent="." unique_id=141045563]
+
+[node name="Node2D" type="Node2D" parent="Exits" unique_id=1875982991]
+
+[node name="SearchUI" type="Control" parent="." unique_id=877164333]
+layout_mode = 3
+anchors_preset = 0
+offset_left = 144.0
+offset_top = 16.0
+offset_right = 184.0
+offset_bottom = 56.0
+
+[node name="SearchPanel" type="Panel" parent="SearchUI" unique_id=1391968539]
+layout_mode = 0
+offset_left = -16.0
+offset_top = -16.0
+offset_right = 400.0
+offset_bottom = 136.0
+
+[node name="SearchInput" type="LineEdit" parent="SearchUI" unique_id=1460285146]
+layout_mode = 0
+offset_right = 384.0
+offset_bottom = 31.0
+
+[node name="SuggestionsList" type="ItemList" parent="SearchUI" unique_id=1715089069]
+layout_mode = 0
+offset_top = 31.0
+offset_right = 384.0
+offset_bottom = 128.0
+
+[node name="SearchButton" type="Button" parent="SearchUI" unique_id=1020861881]
+layout_mode = 0
+offset_left = 336.0
+offset_top = -24.0
+offset_right = 472.0
+offset_bottom = 112.0
+icon = ExtResource("4_1bvp3")
+
+[node name="InfoBubble" type="Control" parent="." unique_id=2110201360]
+layout_mode = 3
+anchors_preset = 0
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="VBoxContainer" type="VBoxContainer" parent="InfoBubble" unique_id=1080356606]
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="BubbleBackground" type="ColorRect" parent="InfoBubble" unique_id=2131572815]
+layout_mode = 0
+offset_top = 54.0
+offset_right = 40.0
+offset_bottom = 54.0
+
+[node name="RoomInfo" type="Label" parent="InfoBubble" unique_id=1544799212]
+modulate = Color(1.8169359e-06, 0.42687544, 2.8878452e-07, 1)
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 23.0
+
+[node name="RoomName" type="Label" parent="InfoBubble" unique_id=1425355296]
+modulate = Color(0, 0, 0, 1)
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 23.0
