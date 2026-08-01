@@ -6,12 +6,6 @@
 [ext_resource type="Texture2D" uid="uid://c0pd8pbnhynwj" path="res://icon.svg" id="4_1bvp3"]
 [ext_resource type="Script" uid="uid://dnr2bbj5cv53l" path="res://room_manager.gd" id="4_lquwl"]
 
-[sub_resource type="Curve2D" id="Curve2D_lquwl"]
-_data = {
-"points": PackedVector2Array(0, 0, 0, 0, 0, 0)
-}
-point_count = 1
-
 [node name="Map" type="Node2D" unique_id=1545570361]
 script = ExtResource("4_lquwl")
 
@@ -35,7 +29,7 @@ position = Vector2(57.800285, 315.01212)
 script = ExtResource("3_h2yge")
 room_name = "Radar Equipment Room"
 room_info = "Radar equipment monitoring station"
-connected_rooms = Array[NodePath]([NodePath("../Comms Equipment Room")])
+connected_rooms = Array[NodePath]([NodePath("../Rooms/Comms Equipment Room")])
 
 [node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="Rooms/Radar Equipment Room" unique_id=1063617348]
 polygon = PackedVector2Array(-1.8002853, 0.9878845, 274.1997, 0.9878845, 274.1997, 232.98788, 550.1997, 232.98788, 550.1997, 368.98788, -1.8002853, 368.98788)
@@ -52,7 +46,7 @@ script = ExtResource("3_h2yge")
 room_name = "Comms Equipment Room"
 room_info = "Communications equipment storage area"
 room_color = Color(0.38306668, 0.3664034, 0.69585246, 0.3019608)
-connected_rooms = Array[NodePath]([NodePath("../Radar Equipment Room"), NodePath("../Exits/Exit")])
+connected_rooms = Array[NodePath]([NodePath("../Rooms/Radar Equipment Room"), NodePath("../Exits/Exit")])
 
 [node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="Rooms/Comms Equipment Room" unique_id=1205077735]
 position = Vector2(2, -1)
@@ -62,8 +56,7 @@ polygon = PackedVector2Array(0, 2, 268, 2, 268, 230, 0, 230)
 position = Vector2(70, 69)
 texture = ExtResource("4_1bvp3")
 
-[node name="PathCurve" type="Path2D" parent="." unique_id=588811546]
-curve = SubResource("Curve2D_lquwl")
+[node name="PathCurve" type="Node2D" parent="." unique_id=588811546]
 
 [node name="Exits" type="Node2D" parent="." unique_id=141045563]
 

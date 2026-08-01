@@ -19,19 +19,7 @@ var path_line: Line2D
 var search_timer: Timer
 
 func _ready():
-	
-		# Create arrow polygon
-	var arrow_polygon = Polygon2D.new()
-	var points = PackedVector2Array([
-		Vector2(0, -5),
-		Vector2(20, 0),
-		Vector2(0, 5)
-	])
-	arrow_polygon.polygon = points
-	arrow_polygon.color = Color.RED
-	path_arrow.add_child(arrow_polygon)
-
-	# Collect all rooms
+	# Collect all rooms first (before trying to find exit)
 	for child in rooms_container.get_children():
 		if child is Room:
 			rooms[child.room_name] = child
@@ -41,8 +29,29 @@ func _ready():
 	# Sort room names alphabetically for better suggestions
 	room_names.sort()
 	
-	# Set exit room
+	# Set exit room - check both Rooms and Exits containers
 	exit_room = rooms.get("Exit")
+	if not exit_room:
+		var exits_container = get_node_or_null("Exits")
+		if exits_container:
+			for child in exits_container.get_children():
+				if child is Room and child.room_name == "Exit":
+					exit_room = child
+					rooms["Exit"] = exit_room
+					room_names.append("Exit")
+					child.room_clicked.connect(_on_room_clicked)
+					break
+	
+	# Create arrow polygon as child of path_arrow
+	var arrow_polygon = Polygon2D.new()
+	var points = PackedVector2Array([
+		Vector2(0, -5),
+		Vector2(20, 0),
+		Vector2(0, 5)
+	])
+	arrow_polygon.polygon = points
+	arrow_polygon.color = Color.RED
+	path_arrow.add_child(arrow_polygon)
 	
 	# Create line for path visualization
 	path_line = Line2D.new()
@@ -192,7 +201,7 @@ func bfs_find_path(start: Room, goal: Room) -> Array:
 			return path
 		
 		for connection_path in current.connected_rooms:
-			var neighbor = get_node(connection_path) as Room
+			var neighbor = get_node_or_null(connection_path) as Room
 			if neighbor and not visited.has(neighbor):
 				visited[neighbor] = current
 				queue.push_back(neighbor)
@@ -201,13 +210,16 @@ func bfs_find_path(start: Room, goal: Room) -> Array:
 
 func draw_path(path: Array):
 	path_line.clear_points()
-	for room in path:
-		path_line.add_point(room.position)
+	if path.size() < 2:
+		return
+	
+	for i in range(path.size()):
+		path_line.add_point(path[i].position)
 
 func update_arrow(path: Array):
 	if path.size() >= 2:
-		var from_pos = path[0].position
-		var to_pos = path[1].position
+		var from_pos = path[-2].position  # Second to last (room before exit)
+		var to_pos = path[-1].position    # Last (exit)
 		
 		path_arrow.position = from_pos
 		path_arrow.rotation = from_pos.angle_to_point(to_pos)
