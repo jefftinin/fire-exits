@@ -1,74 +1,79 @@
 extends Camera2D
 
-var active_touches := {}
-var is_pinching := false
-var last_pinch_distance := 0.0
-var pan_start_pos := Vector2()
-var camera_start_pos := Vector2()
-var drag_threshold := 10.0
-var is_dragging := false
+var _dragging: bool = false
+var _last_mouse_position: Vector2 = Vector2.ZERO
+var _target_zoom: float = 1.0
 
-func _unhandled_input(event: InputEvent) -> void:
-	if event is InputEventScreenTouch:
-		if event.pressed:
-			active_touches[event.index] = event.position
-			if active_touches.size() == 1:
-				pan_start_pos = event.position
-				camera_start_pos = position
-			elif active_touches.size() == 2:
-				is_pinching = true
-				last_pinch_distance = _get_pinch_distance()
-		else:
-			active_touches.erase(event.index)
-			if active_touches.size() < 2:
-				is_pinching = false
-			if active_touches.size() == 1:
-				var remaining_key = active_touches.keys()[0]
-				pan_start_pos = active_touches[remaining_key]
-				camera_start_pos = position
-				is_dragging = false
-			elif active_touches.is_empty():
-				is_pinching = false
-				is_dragging = false
+# Touch handling
+var _active_touches: Dictionary = {} # { index: position }
+var _last_pinch_distance: float = 0.0
 
-	elif event is InputEventMouseButton:
-		if event.pressed:
-			var zoom_factor := 0.1
-			if event.button_index == MOUSE_BUTTON_WHEEL_UP:
-				zoom = Vector2(clamp(zoom.x + zoom_factor, 0.5, 2.0), clamp(zoom.y + zoom_factor, 0.5, 2.0))
-			elif event.button_index == MOUSE_BUTTON_WHEEL_DOWN:
-				zoom = Vector2(clamp(zoom.x - zoom_factor, 0.5, 2.0), clamp(zoom.y - zoom_factor, 0.5, 2.0))
-
-	elif event is InputEventScreenDrag:
-		active_touches[event.index] = event.position
-
-		if not is_pinching and active_touches.size() == 1:
-			if not is_dragging:
-				if event.position.distance_to(pan_start_pos) > drag_threshold:
-					is_dragging = true
-			if is_dragging:
-				position -= event.relative / zoom
-				get_viewport().set_input_as_handled()
-			return
-
-		if is_pinching and active_touches.size() >= 2:
-			var current_distance = _get_pinch_distance()
-			var delta = current_distance - last_pinch_distance
-			var zoom_factor = delta * 0.005
-			var new_zoom = clamp(zoom.x + zoom_factor, 0.5, 2.0)
-			zoom = Vector2(new_zoom, new_zoom)
-			last_pinch_distance = current_distance
-
-func _get_pinch_distance() -> float:
-	var keys = active_touches.keys()
-	if keys.size() < 2:
-		return 0.0
-	var p1 = active_touches[keys[0]]
-	var p2 = active_touches[keys[1]]
-	return p1.distance_to(p2)
-
-func _ready() -> void:
-	pass
+@export var drag_sensitivity: float = 1.0
+@export var zoom_min: float = 0.2
+@export var zoom_max: float = 3.0
+@export var zoom_step: float = 0.1
+@export var zoom_smoothness: float = 8.0
 
 func _process(delta: float) -> void:
-	pass
+	zoom = zoom.lerp(Vector2(_target_zoom, _target_zoom), zoom_smoothness * delta)
+
+func _unhandled_input(event: InputEvent) -> void:
+	# Mouse Controls
+	if event is InputEventMouseButton:
+		var mb := event as InputEventMouseButton
+		if mb.button_index == MOUSE_BUTTON_LEFT:
+			if mb.pressed:
+				_dragging = true
+				_last_mouse_position = mb.position
+			else:
+				_dragging = false
+		if mb.button_index == MOUSE_BUTTON_WHEEL_UP:
+			_target_zoom = clampf(_target_zoom + zoom_step, zoom_min, zoom_max)
+		elif mb.button_index == MOUSE_BUTTON_WHEEL_DOWN:
+			_target_zoom = clampf(_target_zoom - zoom_step, zoom_min, zoom_max)
+	elif event is InputEventMouseMotion and _dragging:
+		get_viewport().set_input_as_handled()
+		var mm := event as InputEventMouseMotion
+		var delta: Vector2 = (mm.position - _last_mouse_position) * drag_sensitivity / zoom
+		position -= delta
+		_last_mouse_position = mm.position
+	
+	# Touch Controls
+	elif event is InputEventScreenTouch:
+		var st := event as InputEventScreenTouch
+		if st.pressed:
+			_active_touches[st.index] = st.position
+			if _active_touches.size() == 2:
+				var points := _active_touches.values()
+				_last_pinch_distance = (points[0] as Vector2).distance_to(points[1] as Vector2)
+		else:
+			_active_touches.erase(st.index)
+			if _active_touches.size() < 2:
+				_last_pinch_distance = 0.0
+				
+	elif event is InputEventScreenDrag:
+		var sd := event as InputEventScreenDrag
+		if not _active_touches.has(sd.index):
+			return
+			
+		_active_touches[sd.index] = sd.position
+		get_viewport().set_input_as_handled()
+		
+		# Pinch Zoom (2 fingers)
+		if _active_touches.size() == 2:
+			var points := _active_touches.values()
+			var current_distance: float = (points[0] as Vector2).distance_to(points[1] as Vector2)
+			
+			if _last_pinch_distance > 0.0:
+				var pinch_delta: float = current_distance - _last_pinch_distance
+				# Sensitivity multiplier for pinch zoom
+				var zoom_change: float = pinch_delta * 0.005 
+				_target_zoom = clampf(_target_zoom + zoom_change, zoom_min, zoom_max)
+				
+			_last_pinch_distance = current_distance
+			
+		# Single Finger Pan
+		elif _active_touches.size() == 1:
+			var delta: Vector2 = sd.relative * drag_sensitivity / zoom
+			position -= delta
+			
