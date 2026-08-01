@@ -49,7 +49,7 @@ text = "PUSSY"
 position = Vector2(338, 315)
 script = ExtResource("3_h2yge")
 room_name = "Comms Equipment Room"
-room_color = Color(0.38306668, 0.3664034, 0.69585246, 0.3019608)
+room_color = Color(0.38431373, 0.3647059, 0.69411767, 1)
 connected_rooms = Array[NodePath]([NodePath("../Radar Equipment Room")])
 
 [node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="Rooms/Comms Equipment Room" unique_id=1205077735]
