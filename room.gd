@@ -7,7 +7,7 @@ class_name Room
 @export var room_color: Color = Color(0, 0, 0, 0,)
 
 # Connection to adjacent rooms (for pathfinding)
-@export var connected_rooms: Array[NodePath] = []
+#@export var connected_rooms: Array[NodePath] = []
 
 # For visual feedback
 var is_hovered: bool = false

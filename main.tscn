@@ -4,19 +4,34 @@
 [ext_resource type="Script" uid="uid://dt76m3ywpuxtx" path="res://main.gd" id="1_lquwl"]
 [ext_resource type="Script" uid="uid://dkhlkn7oflv3v" path="res://camera_2d.gd" id="2_h2yge"]
 [ext_resource type="Script" uid="uid://blgk000347yrr" path="res://room.gd" id="3_h2yge"]
-[ext_resource type="Texture2D" uid="uid://c0pd8pbnhynwj" path="res://icon.svg" id="4_1bvp3"]
-[ext_resource type="Script" uid="uid://w52fiv1a8816" path="res://door.gd" id="6_7mycd"]
+[ext_resource type="Script" uid="uid://bnxoev3el0o5o" path="res://path_arrow.gd" id="5_lquwl"]
 
-[sub_resource type="Curve2D" id="Curve2D_lquwl"]
-_data = {
-"points": PackedVector2Array(0, 0, 0, 0, 0, 0)
-}
-point_count = 1
+[sub_resource type="LabelSettings" id="LabelSettings_272bh"]
+font_size = 19
+
+[sub_resource type="NavigationPolygon" id="NavigationPolygon_t4goq"]
+vertices = PackedVector2Array(564, 556, 564, 542, 578, 542, 578, 556, 598, 556, 598, 670, 578, 670, 506, 670, 506, 690, 578, 690, 324.09375, 556, 68, 670, 68, 326, 322.09375, 326)
+polygons = Array[PackedInt32Array]([PackedInt32Array(0, 1, 2, 3), PackedInt32Array(3, 4, 5, 6), PackedInt32Array(7, 0, 3, 6, 8), PackedInt32Array(6, 9, 8), PackedInt32Array(10, 0, 7, 11), PackedInt32Array(10, 11, 12, 13)])
+outlines = Array[PackedVector2Array]([PackedVector2Array(58, 316, 332, 316, 334, 546, 554, 546, 554, 532, 588, 532, 588, 546, 608, 546, 608, 680, 588, 680, 588, 700, 496, 700, 496, 680, 58, 680)])
+
+[sub_resource type="NavigationPolygon" id="NavigationPolygon_1bvp3"]
+vertices = PackedVector2Array(239.0625, 230.63281, 225.14844, 230.63281, 225.27344, 216.63281, 239.0625, 216.63281, 259.0625, 8.6328125, 259.0625, 216.63281, 9.0625, 8.6328125, 9.0625, 216.63281)
+polygons = Array[PackedInt32Array]([PackedInt32Array(0, 1, 2, 3), PackedInt32Array(4, 5, 3, 6), PackedInt32Array(6, 3, 2), PackedInt32Array(6, 2, 7)])
+outlines = Array[PackedVector2Array]([PackedVector2Array(-0.9390564, -1.3694458, 269.06094, -1.3694458, 269.06094, 226.63055, 249.06094, 226.63055, 249.06094, 240.63055, 215.06094, 240.63055, 215.1795, 226.63055, -0.9390564, 226.63055)])
+
+[sub_resource type="NavigationPolygon" id="NavigationPolygon_lquwl"]
+vertices = PackedVector2Array(241.0625, 9.6328125, 261.0625, 9.6328125, 261.0625, 15.6328125, 223.0625, 339.6328, 277.0625, 15.6328125, 277.0625, 85.63281, 261.0625, 85.63281, 261.0625, 339.6328, 243.0625, 339.6328, 243.0625, 355.6328, 223.0625, 355.6328, 7.0625, 339.6328, 7.0625, 85.63281, 9.0625, 15.6328125, 169.0625, 9.6328125, -8.9375, 85.63281, -8.9375, 15.6328125, 9.0625, 9.6328125, 169.0625, -0.3671875, 241.0625, -0.3671875)
+polygons = Array[PackedInt32Array]([PackedInt32Array(0, 1, 2, 3), PackedInt32Array(2, 4, 5, 6), PackedInt32Array(6, 7, 8), PackedInt32Array(8, 9, 10, 3), PackedInt32Array(3, 11, 12, 13, 14, 0), PackedInt32Array(12, 15, 16, 13), PackedInt32Array(13, 17, 14), PackedInt32Array(14, 18, 19, 0), PackedInt32Array(3, 2, 6, 8)])
+outlines = Array[PackedVector2Array]([PackedVector2Array(-0.9390564, -0.3694458, 159.06094, -0.3694458, 159.06094, -10.369446, 251.06094, -10.369446, 251.06094, -0.3694458, 271.06094, -0.3694458, 271.06094, 5.630554, 287.06094, 5.630554, 287.06094, 95.630554, 271.06094, 95.630554, 271.06094, 349.63055, 253.06094, 349.63055, 253.06094, 365.63055, 213.06094, 365.63055, 213.06094, 349.63055, -2.9390564, 349.63055, -2.9390564, 95.630554, -18.939056, 95.630554, -18.939056, 5.630554, -0.9390564, 5.630554)])
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_vtma8"]
 
 [node name="Map" type="Node2D" unique_id=1545570361]
 script = ExtResource("1_lquwl")
+metadata/_edit_vertical_guides_ = [1152.0]
 
 [node name="Camera2D" type="Camera2D" parent="." unique_id=117667258]
+position = Vector2(478.58224, 469.98218)
 zoom = Vector2(0.25, 0.25)
 script = ExtResource("2_h2yge")
 
@@ -113,184 +128,117 @@ position = Vector2(57.800285, 315.01212)
 script = ExtResource("3_h2yge")
 room_name = "Radar Equipment Room"
 room_info = ""
-connected_rooms = Array[NodePath]([NodePath("../Comms Equipment Room")])
 
 [node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="Rooms/Radar Equipment Room" unique_id=1063617348]
-polygon = PackedVector2Array(-1.8002853, 0.9878845, 274.1997, 0.9878845, 274.1997, 232.98788, 550.1997, 232.98788, 550.1997, 368.98788, -1.8002853, 368.98788)
+visible = false
+polygon = PackedVector2Array(-1.8002853, 0.9878845, 274.1997, 0.9878845, 274.1997, 232.98788, 550.1997, 232.98788, 550.1997, 366.98788, -1.8002853, 366.98788)
 
-[node name="Label" type="Label" parent="Rooms/Radar Equipment Room" unique_id=1738312495]
+[node name="Label" type="Label" parent="Rooms/Radar Equipment Room/CollisionPolygon2D" unique_id=1738312495]
 modulate = Color(0, 0, 0, 1)
-offset_right = 40.0
-offset_bottom = 23.0
-text = "PUSSY"
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = 16.199715
+offset_top = 198.98788
+offset_right = 260.1997
+offset_bottom = 228.98788
+grow_horizontal = 2
+grow_vertical = 2
+text = "RADAR EQUIPMENT ROOM"
+label_settings = SubResource("LabelSettings_272bh")
+vertical_alignment = 1
+metadata/_edit_use_anchors_ = true
+
+[node name="NavigationRegion2D" type="NavigationRegion2D" parent="Rooms/Radar Equipment Room" unique_id=1377031251]
+position = Vector2(-57.800285, -315.01212)
+navigation_polygon = SubResource("NavigationPolygon_t4goq")
+
+[node name="Polygon2D" type="Polygon2D" parent="Rooms/Radar Equipment Room" unique_id=1983870480]
 
 [node name="Comms Equipment Room" type="Area2D" parent="Rooms" unique_id=780706477]
 position = Vector2(338, 315)
 script = ExtResource("3_h2yge")
 room_name = "Comms Equipment Room"
 room_info = "Room containing things"
-connected_rooms = Array[NodePath]([NodePath("../Radar Equipment Room")])
 
 [node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="Rooms/Comms Equipment Room" unique_id=1205077735]
+visible = false
 position = Vector2(2, -1)
 polygon = PackedVector2Array(-2, 2, 268, 2, 268, 228, -2, 228)
 
-[node name="Sprite2D" type="Sprite2D" parent="Rooms/Comms Equipment Room" unique_id=831991972]
-position = Vector2(70, 69)
-texture = ExtResource("4_1bvp3")
+[node name="NavigationRegion2D" type="NavigationRegion2D" parent="Rooms/Comms Equipment Room" unique_id=859801883]
+position = Vector2(0.9390564, 0.3694458)
+navigation_polygon = SubResource("NavigationPolygon_1bvp3")
 
-[node name="Comms Equipment Room2" type="Area2D" parent="Rooms" unique_id=1746467617]
+[node name="Elex Room" type="Area2D" parent="Rooms" unique_id=1211513226]
+position = Vector2(336, 690)
+script = ExtResource("3_h2yge")
+room_name = "Comms Equipment Room"
+room_info = "Room containing things"
+
+[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="Rooms/Elex Room" unique_id=1173389900]
+visible = false
+position = Vector2(2, -1)
+polygon = PackedVector2Array(-2, 2, 268, 2, 268, 228, -2, 228)
+
+[node name="NavigationRegion2D" type="NavigationRegion2D" parent="Rooms/Elex Room" unique_id=1350070186]
+position = Vector2(0.9390564, 0.3694458)
+navigation_polygon = SubResource("NavigationPolygon_lquwl")
+
+[node name="generator" type="Area2D" parent="Rooms" unique_id=1746467617]
 position = Vector2(338, 315)
 script = ExtResource("3_h2yge")
 room_name = "Generator Room"
 room_info = "Room containing things"
-connected_rooms = Array[NodePath]([NodePath("../Comms Equipment Room")])
 
-[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="Rooms/Comms Equipment Room2" unique_id=386175842]
+[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="Rooms/generator" unique_id=386175842]
+visible = false
 position = Vector2(280, -1)
 polygon = PackedVector2Array(0, 2, 534, 2, 534, 368, 0, 368)
 
-[node name="Sprite2D" type="Sprite2D" parent="Rooms/Comms Equipment Room2" unique_id=1974281908]
-position = Vector2(70, 69)
-texture = ExtResource("4_1bvp3")
+[node name="PathArrow" type="RigidBody2D" parent="." unique_id=1170555964]
+position = Vector2(113, 390)
+gravity_scale = 0.0
+script = ExtResource("5_lquwl")
+speed = 200.0
 
-[node name="PathCurve" type="Path2D" parent="." unique_id=588811546]
-curve = SubResource("Curve2D_lquwl")
+[node name="CollisionShape2D" type="CollisionShape2D" parent="PathArrow" unique_id=2078867091]
+shape = SubResource("CircleShape2D_vtma8")
 
-[node name="Doors" type="Node2D" parent="." unique_id=583701217]
+[node name="NavigationAgent2D" type="NavigationAgent2D" parent="PathArrow" unique_id=776805929]
+debug_path_custom_color = Color(0, 0, 0, 1)
+debug_path_custom_line_width = 3.46
 
-[node name="RadarComms" type="Node2D" parent="Doors" unique_id=494108282]
-position = Vector2(570.4143, 545.88965)
-script = ExtResource("6_7mycd")
+[node name="Exits" type="Node2D" parent="." unique_id=583701217]
 
-[node name="RadarElex" type="Node2D" parent="Doors" unique_id=973757878]
-position = Vector2(541.52264, 688.76556)
-
-[node name="RadarUps" type="Node2D" parent="Doors" unique_id=1273314748]
-position = Vector2(211.6842, 686.9079)
-
-[node name="UpsElex" type="Node2D" parent="Doors" unique_id=1406826943]
-position = Vector2(329.2492, 740.5978)
-
-[node name="UpsBatt1" type="Node2D" parent="Doors" unique_id=1207451714]
-position = Vector2(292, 1046)
-
-[node name="UpsBatt2" type="Node2D" parent="Doors" unique_id=591288826]
-position = Vector2(81.984055, 1045.8639)
-
-[node name="MaintFic" type="Node2D" parent="Doors" unique_id=879345813]
-position = Vector2(442.2408, 1271.871)
-
-[node name="ElexFic" type="Node2D" parent="Doors" unique_id=339773713]
-position = Vector2(570, 1046)
-
-[node name="MensHall" type="Node2D" parent="Doors" unique_id=1458792203]
-position = Vector2(1592, 454)
-
-[node name="ToiletHall1" type="Node2D" parent="Doors" unique_id=540632945]
-position = Vector2(1722, 452)
-
-[node name="LadiesHall" type="Node2D" parent="Doors" unique_id=2086625398]
-position = Vector2(1954, 454)
-
-[node name="ToiletLadies" type="Node2D" parent="Doors" unique_id=737380757]
-position = Vector2(1916, 368)
-
-[node name="DiningKitchen" type="Node2D" parent="Doors" unique_id=1702603662]
-position = Vector2(2174, 262)
-
-[node name="DiningHall" type="Node2D" parent="Doors" unique_id=1183783018]
-position = Vector2(2178, 454)
-
-[node name="ToiletHall2" type="Node2D" parent="Doors" unique_id=1231812658]
-position = Vector2(2368, 454)
-
-[node name="ToiletHall3" type="Node2D" parent="Doors" unique_id=898749020]
-position = Vector2(2392, 352)
-
-[node name="LockerHall" type="Node2D" parent="Doors" unique_id=2123030886]
-position = Vector2(2483.7656, 505.30695)
-
-[node name="OldcommsHall" type="Node2D" parent="Doors" unique_id=2052370241]
-position = Vector2(2392, 624)
-
-[node name="Blank2Hall" type="Node2D" parent="Doors" unique_id=1129482671]
-position = Vector2(2484, 584)
-
-[node name="Blank3Hall" type="Node2D" parent="Doors" unique_id=567972346]
-position = Vector2(2392, 954)
-
-[node name="OfficeHall" type="Node2D" parent="Doors" unique_id=1181374263]
-position = Vector2(2484, 954)
-
-[node name="OfficeHall2" type="Node2D" parent="Doors" unique_id=399392484]
-position = Vector2(2482, 1232)
-
-[node name="Blank3Computer" type="Node2D" parent="Doors" unique_id=1572408181]
-position = Vector2(2260, 954)
-
-[node name="ComputerLadies" type="Node2D" parent="Doors" unique_id=9476374]
-position = Vector2(1978, 896)
-
-[node name="LadiesMaint" type="Node2D" parent="Doors" unique_id=412100352]
-position = Vector2(1950, 722)
-
-[node name="MaintOldcomms" type="Node2D" parent="Doors" unique_id=1365255617]
-position = Vector2(1978, 578)
-
-[node name="MaintHall" type="Node2D" parent="Doors" unique_id=77104859]
-position = Vector2(1912, 540)
-
-[node name="TrdpsIFR" type="Node2D" parent="Doors" unique_id=94866133]
-position = Vector2(1562.5096, 1055.9738)
-
-[node name="IfrHall" type="Node2D" parent="Doors" unique_id=1831713141]
-position = Vector2(1624.9958, 957.88806)
-
-[node name="Maint2Hall" type="Node2D" parent="Doors" unique_id=1234999099]
-position = Vector2(1538, 958)
-
-[node name="Maint2Hall2" type="Node2D" parent="Doors" unique_id=1263376996]
-position = Vector2(1563, 844)
-
-[node name="Maint2Ccu" type="Node2D" parent="Doors" unique_id=338368356]
-position = Vector2(1538, 722)
-
-[node name="CcuHall" type="Node2D" parent="Doors" unique_id=1118866969]
-position = Vector2(1563, 632)
-
-[node name="StorageHall" type="Node2D" parent="Doors" unique_id=1225643169]
-position = Vector2(1652.2854, 763.9632)
-
-[node name="Blank3Oldcomms" type="Node2D" parent="Doors" unique_id=1479997752]
-position = Vector2(2356, 778)
-
-[node name="Exit1" type="Node2D" parent="Doors" unique_id=855394124]
-position = Vector2(615.7866, 741.31824)
+[node name="Exit1" type="Node2D" parent="Exits" unique_id=855394124 groups=["Exits"]]
+position = Vector2(614.53625, 742.0314)
 metadata/is_exit = true
 
-[node name="Exit2" type="Node2D" parent="Doors" unique_id=1461236456]
+[node name="Exit2" type="Node2D" parent="Exits" unique_id=1461236456 groups=["Exits"]]
 position = Vector2(740.35693, 688.921)
 
-[node name="Exit3" type="Node2D" parent="Doors" unique_id=1530927309]
+[node name="Exit3" type="Node2D" parent="Exits" unique_id=1530927309 groups=["Exits"]]
 position = Vector2(1015.7568, 689.1189)
 
-[node name="Exit4" type="Node2D" parent="Doors" unique_id=692508323]
+[node name="Exit4" type="Node2D" parent="Exits" unique_id=692508323 groups=["Exits"]]
 position = Vector2(615.27344, 1297.3384)
 
-[node name="Exit5" type="Node2D" parent="Doors" unique_id=1218920785]
+[node name="Exit5" type="Node2D" parent="Exits" unique_id=1218920785 groups=["Exits"]]
 position = Vector2(612.1614, 1237.969)
 
-[node name="Exit6" type="Node2D" parent="Doors" unique_id=1927805582]
+[node name="Exit6" type="Node2D" parent="Exits" unique_id=1927805582 groups=["Exits"]]
 position = Vector2(1619.8914, 1281.7339)
 
-[node name="Exit7" type="Node2D" parent="Doors" unique_id=947438212]
+[node name="Exit7" type="Node2D" parent="Exits" unique_id=947438212 groups=["Exits"]]
 position = Vector2(2306.956, 1279.3083)
 
-[node name="Exit8" type="Node2D" parent="Doors" unique_id=659121969]
+[node name="Exit8" type="Node2D" parent="Exits" unique_id=659121969 groups=["Exits"]]
 position = Vector2(1332.7622, 496.76178)
 
-[node name="Exit9" type="Node2D" parent="Doors" unique_id=211644367]
+[node name="Exit9" type="Node2D" parent="Exits" unique_id=211644367 groups=["Exits"]]
 position = Vector2(197.99228, 1417.0671)
 
 [node name="InfoBubble" type="Control" parent="." unique_id=2110201360]
