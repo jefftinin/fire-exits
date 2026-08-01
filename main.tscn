@@ -5,6 +5,7 @@
 [ext_resource type="Script" uid="uid://dkhlkn7oflv3v" path="res://camera_2d.gd" id="2_h2yge"]
 [ext_resource type="Script" uid="uid://blgk000347yrr" path="res://room.gd" id="3_h2yge"]
 [ext_resource type="Texture2D" uid="uid://c0pd8pbnhynwj" path="res://icon.svg" id="4_1bvp3"]
+[ext_resource type="Script" uid="uid://w52fiv1a8816" path="res://door.gd" id="6_7mycd"]
 
 [sub_resource type="Curve2D" id="Curve2D_lquwl"]
 _data = {
@@ -160,6 +161,7 @@ curve = SubResource("Curve2D_lquwl")
 
 [node name="RadarComms" type="Node2D" parent="Doors" unique_id=494108282]
 position = Vector2(570.4143, 545.88965)
+script = ExtResource("6_7mycd")
 
 [node name="RadarElex" type="Node2D" parent="Doors" unique_id=973757878]
 position = Vector2(541.52264, 688.76556)
