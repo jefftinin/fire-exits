@@ -138,7 +138,8 @@ func _physics_process(_delta: float) -> void:
 				navigation_agent_2d.target_position = best_exit.global_position
 			
 			# Check if navigation is complete (arrived at exit)
-			if navigation_agent_2d.is_navigation_finished():
+			# Don't rely on is_navigation_finished() as it returns true for intermediate waypoints
+			if global_position.distance_to(best_exit.global_position) < 10.0:
 				_nav_state = NavState.SEEKING_ASSEMBLY
 				# Fall through to assembly seeking in same frame
 				_handle_assembly_seeking()
@@ -199,15 +200,8 @@ func _move_toward_target() -> void:
 	# Get next path position from navigation agent
 	var next_path_position := navigation_agent_2d.get_next_path_position()
 	
-	# Only snap to door positions when seeking exits, not when seeking assembly points.
-	# Snapping to doors during assembly seeking can cause the arrow to get stuck at doors
-	# instead of proceeding to the assembly coordinates.
-	var align_target: Vector2
-	if _nav_state == NavState.SEEKING_EXIT:
-		align_target = _find_nearest_door_position(next_path_position, next_path_position)
-	else:
-		align_target = next_path_position
-	var delta := align_target - global_position
+	# Calculate direction to the next path waypoint (don't snap to doors)
+	var delta := next_path_position - global_position
 	
 	var x_aligned := absf(delta.x) <= AXIS_ALIGN_TOLERANCE
 	var y_aligned := absf(delta.y) <= AXIS_ALIGN_TOLERANCE
