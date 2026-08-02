@@ -6,16 +6,32 @@ extends Node2D
 @onready var vbox_container: VBoxContainer = $InfoBubble/VBoxContainer
 @onready var room_name_label: Label = $InfoBubble/VBoxContainer/RoomName
 @onready var room_info_label: Label = $InfoBubble/VBoxContainer/RoomInfo
+@onready var maplist: ItemList = $UILayer/ItemList
+
+
+const MAP_SCENES: Dictionary = {
+	"Radar": preload("res://radar.tscn"),
+	"Tower": preload("res://tower.tscn"),
+}
+
+var _current_map: Node2D = null
+var _trackline_index: int = -1
 
 func _ready() -> void:
 	# Hide the info bubble initially
 	info_bubble.visible = false
 	
-	# Connect to all room click signals
-	var rooms_node := $'Radar/Rooms'
-	for child in rooms_node.get_children():
-		if child is Room:
-			child.room_clicked.connect(_on_room_clicked)
+	# Populate the map list
+	for map_name in MAP_SCENES:
+		maplist.add_item(map_name)
+	maplist.item_selected.connect(_on_map_selected)
+	
+	# Select Radar by default (index 0)
+	maplist.select(0)
+	_trackline_index = trackline.get_index()
+	_load_map("Radar")
+
+	
 
 func _on_room_clicked(room: Room) -> void:
 	# Update the labels with room data
@@ -49,6 +65,63 @@ func _on_room_clicked(room: Room) -> void:
 	path_arrow.teleport_to(global_mouse_pos)
 	path_arrow.visible = true
 	trackline.visible = true
+
+func _on_map_selected(index: int) -> void:
+	var selected_name := maplist.get_item_text(index)
+	_load_map(selected_name)
+
+func _load_map(map_name: String) -> void:
+	if not MAP_SCENES.has(map_name):
+		push_error("Unknown map: %s" % map_name)
+		return
+	
+	# Hide UI elements when switching maps
+	info_bubble.visible = false
+	path_arrow.visible = false
+	trackline.visible = false
+	
+	# Free the current map if one exists
+	if _current_map != null:
+		_current_map.queue_free()
+		_current_map = null
+	
+	# Instantiate and add the new map
+	var scene: PackedScene = MAP_SCENES[map_name]
+	_current_map = scene.instantiate() as Node2D
+	add_child(_current_map)
+	move_child(_current_map, _trackline_index -1 )
+	
+	# Connect room signals for the new map
+	_connect_room_signals(_current_map)
+	
+	# Refresh navigation targets so PathArrow can find exits/assemblies in the new map
+	path_arrow.refresh_targets()
+
+func _connect_room_signals(map_node: Node2D) -> void:
+	_connect_signals_from_container(map_node, "Rooms")
+	_connect_signals_from_container(map_node, "Assembly Areas")
+
+func _connect_signals_from_container(map_node: Node2D, container_name: String) -> void:
+	var container := map_node.get_node_or_null(container_name)
+	if container == null:
+		return
+	for child in container.get_children():
+		if child is Room:
+			if not child.room_clicked.is_connected(_on_room_clicked):
+				child.room_clicked.connect(_on_room_clicked)
+
+func _disconnect_room_signals(map_node: Node2D) -> void:
+	_disconnect_signals_from_container(map_node, "Rooms")
+	_disconnect_signals_from_container(map_node, "Assembly Areas")
+
+func _disconnect_signals_from_container(map_node: Node2D, container_name: String) -> void:
+	var container := map_node.get_node_or_null(container_name)
+	if container == null:
+		return
+	for child in container.get_children():
+		if child is Room:
+			if child.room_clicked.is_connected(_on_room_clicked):
+				child.room_clicked.disconnect(_on_room_clicked)
 
 func _unhandled_input(event: InputEvent) -> void:
 	# Handle left mouse button clicks

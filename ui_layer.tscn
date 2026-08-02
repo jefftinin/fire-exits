@@ -78,3 +78,9 @@ auto_width = true
 auto_height = true
 wraparound_items = false
 metadata/_edit_use_anchors_ = true
+
+[node name="ItemList" type="ItemList" parent="." unique_id=425106234]
+offset_right = 40.0
+offset_bottom = 40.0
+auto_width = true
+auto_height = true

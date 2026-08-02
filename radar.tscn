@@ -3,9 +3,6 @@
 [ext_resource type="Texture2D" uid="uid://85vokbaagad7" path="res://assets/bgradar.jpg" id="1_klbcc"]
 [ext_resource type="Script" uid="uid://blgk000347yrr" path="res://room.gd" id="2_rlo7y"]
 
-[sub_resource type="LabelSettings" id="LabelSettings_272bh"]
-font_size = 19
-
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_51ij6"]
 size = Vector2(2812, 1336)
 
@@ -16,7 +13,6 @@ outlines = Array[PackedVector2Array]([PackedVector2Array(2948, 0, 0, 0, 0, 1472,
 agent_radius = 15.0
 
 [node name="Radar" type="Node2D" unique_id=1675938871]
-visible = false
 
 [node name="MapSprite" type="Sprite2D" parent="." unique_id=1190141475]
 position = Vector2(1462.0001, 779.99994)
@@ -27,173 +23,11 @@ region_rect = Rect2(197, 625, 4568, 2247)
 
 [node name="Rooms" type="Node" parent="." unique_id=232256808]
 
-[node name="Radar Equipment Room" type="Area2D" parent="Rooms" unique_id=1661293339]
-visible = false
-position = Vector2(57.800285, 315.01212)
-script = ExtResource("2_rlo7y")
-room_name = "Radar Equipment Room"
-room_info = ""
-metadata/_edit_lock_ = true
-
-[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="Rooms/Radar Equipment Room" unique_id=1663776925]
-polygon = PackedVector2Array(-1.8002853, 0.9878845, 274.1997, 0.9878845, 274.1997, 232.98788, 550.1997, 232.98788, 550.1997, 366.98788, -1.8002853, 366.98788)
-
-[node name="Label" type="Label" parent="Rooms/Radar Equipment Room" unique_id=158121844]
-modulate = Color(0, 0, 0, 1)
-anchors_preset = 8
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-offset_left = 16.199715
-offset_top = 198.98788
-offset_right = 260.1997
-offset_bottom = 228.98788
-grow_horizontal = 2
-grow_vertical = 2
-label_settings = SubResource("LabelSettings_272bh")
-vertical_alignment = 1
-metadata/_edit_use_anchors_ = true
-
-[node name="Comms Equipment Room" type="Area2D" parent="Rooms" unique_id=1921291279]
-visible = false
-position = Vector2(338, 315)
-script = ExtResource("2_rlo7y")
-room_name = "Comms Equipment Room"
-room_info = "Room containing things"
-metadata/_edit_lock_ = true
-
-[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="Rooms/Comms Equipment Room" unique_id=605530103]
-position = Vector2(2, -1)
-polygon = PackedVector2Array(-2, 2, 268, 2, 268, 228, -2, 228)
-
-[node name="Label" type="Label" parent="Rooms/Comms Equipment Room" unique_id=1298150409]
-modulate = Color(0, 0, 0, 1)
-anchors_preset = 8
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-offset_left = 16.199715
-offset_top = 198.98788
-offset_right = 260.1997
-offset_bottom = 228.98788
-grow_horizontal = 2
-grow_vertical = 2
-label_settings = SubResource("LabelSettings_272bh")
-vertical_alignment = 1
-metadata/_edit_use_anchors_ = true
-
-[node name="Elex Room" type="Area2D" parent="Rooms" unique_id=2085204906]
-visible = false
-position = Vector2(336, 690)
-script = ExtResource("2_rlo7y")
-room_name = "Comms Equipment Room"
-room_info = "Room containing things"
-metadata/_edit_lock_ = true
-
-[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="Rooms/Elex Room" unique_id=959649076]
-position = Vector2(2, -1)
-polygon = PackedVector2Array(-2, 2, 268, 2, 268, 351, -2, 355)
-
-[node name="Label" type="Label" parent="Rooms/Elex Room" unique_id=198024531]
-modulate = Color(0, 0, 0, 1)
-anchors_preset = 8
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-offset_left = 16.199715
-offset_top = 198.98788
-offset_right = 260.1997
-offset_bottom = 228.98788
-grow_horizontal = 2
-grow_vertical = 2
-label_settings = SubResource("LabelSettings_272bh")
-vertical_alignment = 1
-metadata/_edit_use_anchors_ = true
-
-[node name="Elex Room2" type="Area2D" parent="Rooms" unique_id=340229680]
-visible = false
-position = Vector2(57.682877, 691.0252)
-script = ExtResource("2_rlo7y")
-room_name = "Comms Equipment Room"
-room_info = "Room containing things"
-metadata/_edit_lock_ = true
-
-[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="Rooms/Elex Room2" unique_id=539093231]
-position = Vector2(2, -1)
-polygon = PackedVector2Array(-2, 2, 268, 2, 268.31714, 577.9748, -3.6828766, 577.9748)
-metadata/_edit_lock_ = true
-
-[node name="Label" type="Label" parent="Rooms/Elex Room2" unique_id=1018178736]
-modulate = Color(0, 0, 0, 1)
-anchors_preset = 8
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-offset_left = 16.199715
-offset_top = 198.98788
-offset_right = 260.1997
-offset_bottom = 228.98788
-grow_horizontal = 2
-grow_vertical = 2
-label_settings = SubResource("LabelSettings_272bh")
-vertical_alignment = 1
-metadata/_edit_use_anchors_ = true
-
-[node name="generator" type="Area2D" parent="Rooms" unique_id=1114153771]
-visible = false
-position = Vector2(616, 316)
-script = ExtResource("2_rlo7y")
-room_name = "Generator Room"
-room_info = "Room containing things"
-metadata/_edit_lock_ = true
-
-[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="Rooms/generator" unique_id=1174281754]
-position = Vector2(0, -4)
-polygon = PackedVector2Array(0, 2, 534, 2, 534, 368, 0, 368)
-
-[node name="Label" type="Label" parent="Rooms/generator" unique_id=307633966]
-modulate = Color(0, 0, 0, 1)
-anchors_preset = 8
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-offset_left = 16.199715
-offset_top = 198.98788
-offset_right = 260.1997
-offset_bottom = 228.98788
-grow_horizontal = 2
-grow_vertical = 2
-label_settings = SubResource("LabelSettings_272bh")
-vertical_alignment = 1
-metadata/_edit_use_anchors_ = true
-
 [node name="map" type="Area2D" parent="Rooms" unique_id=594464964]
 position = Vector2(28.847244, 126.01348)
 script = ExtResource("2_rlo7y")
 room_name = "Generator Room"
 room_info = "Room containing things"
-
-[node name="Label" type="Label" parent="Rooms/map" unique_id=63142759]
-modulate = Color(0, 0, 0, 1)
-anchors_preset = 8
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-offset_left = 16.199715
-offset_top = 198.98788
-offset_right = 260.1997
-offset_bottom = 228.98788
-grow_horizontal = 2
-grow_vertical = 2
-label_settings = SubResource("LabelSettings_272bh")
-vertical_alignment = 1
-metadata/_edit_use_anchors_ = true
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Rooms/map" unique_id=611763936]
 position = Vector2(1433.1527, 633.9865)
@@ -202,84 +36,20 @@ debug_color = Color(0, 0.49411765, 0.5764706, 0)
 
 [node name="Assembly Areas" type="Node" parent="." unique_id=1106072746]
 
-[node name="Assembly Area" type="Area2D" parent="Assembly Areas" unique_id=884804123 groups=["Assembly"]]
+[node name="Assembly Area" type="Node2D" parent="Assembly Areas" unique_id=680772434 groups=["Assembly"]]
 position = Vector2(928, 916)
-script = ExtResource("2_rlo7y")
-room_name = "Assembly Area"
-room_info = "Assemble here"
-room_color = Color(0.9411765, 0, 0, 0.69803923)
 
-[node name="Label" type="Label" parent="Assembly Areas/Assembly Area" unique_id=872517261]
-modulate = Color(0, 0, 0, 1)
-anchors_preset = 8
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-offset_left = 16.199715
-offset_top = 198.98788
-offset_right = 260.1997
-offset_bottom = 228.98788
-grow_horizontal = 2
-grow_vertical = 2
-label_settings = SubResource("LabelSettings_272bh")
-vertical_alignment = 1
-metadata/_edit_use_anchors_ = true
-
-[node name="Assembly Area2" type="Area2D" parent="Assembly Areas" unique_id=303409968 groups=["Assembly"]]
+[node name="Assembly Area2" type="Node2D" parent="Assembly Areas" unique_id=728082039 groups=["Assembly"]]
 position = Vector2(1624, 1376)
-script = ExtResource("2_rlo7y")
-room_name = "Assembly Area"
-room_info = "Assemble here"
-room_color = Color(0.9411765, 0, 0, 0.69803923)
 
-[node name="Label" type="Label" parent="Assembly Areas/Assembly Area2" unique_id=856617503]
-modulate = Color(0, 0, 0, 1)
-anchors_preset = 8
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-offset_left = 16.199715
-offset_top = 198.98788
-offset_right = 260.1997
-offset_bottom = 228.98788
-grow_horizontal = 2
-grow_vertical = 2
-label_settings = SubResource("LabelSettings_272bh")
-vertical_alignment = 1
-metadata/_edit_use_anchors_ = true
-
-[node name="Assembly Area3" type="Area2D" parent="Assembly Areas" unique_id=1105203516 groups=["Assembly"]]
+[node name="Assembly Area3" type="Node2D" parent="Assembly Areas" unique_id=22445521 groups=["Assembly"]]
 position = Vector2(2316, 1376)
-script = ExtResource("2_rlo7y")
-room_name = "Assembly Area"
-room_info = "Assemble here"
-room_color = Color(0.9411765, 0, 0, 0.69803923)
-
-[node name="Label" type="Label" parent="Assembly Areas/Assembly Area3" unique_id=1114839228]
-modulate = Color(0, 0, 0, 1)
-anchors_preset = 8
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-offset_left = 16.199715
-offset_top = 198.98788
-offset_right = 260.1997
-offset_bottom = 228.98788
-grow_horizontal = 2
-grow_vertical = 2
-label_settings = SubResource("LabelSettings_272bh")
-vertical_alignment = 1
-metadata/_edit_use_anchors_ = true
 
 [node name="NavigationRegion2D" type="NavigationRegion2D" parent="." unique_id=1778582270]
-visible = false
 navigation_polygon = SubResource("NavigationPolygon_brh4u")
+navigation_layers = 65535
 
 [node name="bldgb" type="NavigationObstacle2D" parent="NavigationRegion2D" unique_id=500217473]
-visible = false
 vertices = PackedVector2Array(1328, 476, 1340, 476, 1340, 456, 1576, 456, 1576, 448, 1568, 448, 1568, 312, 1556, 312, 1556, 448, 1340, 448, 1340, 264, 1628, 264, 1628, 448, 1608, 448, 1608, 456, 1704, 456, 1704, 448, 1692, 448, 1692, 432, 1688, 432, 1688, 448, 1636, 448, 1636, 392, 1688, 392, 1688, 400, 1692, 400, 1692, 368, 1684, 368, 1688, 388, 1636, 388, 1636, 332, 1688, 332, 1688, 340, 1692, 336, 1692, 304, 1688, 304, 1688, 328, 1636, 328, 1636, 264, 1688, 264, 1688, 276, 1692, 276, 1692, 264, 1744, 264, 1744, 448, 1740, 448, 1740, 456, 1936, 456, 1936, 448, 1752, 448, 1752, 264, 1912, 264, 1912, 352, 1920, 352, 1920, 264, 1976, 264, 1976, 388, 1920, 388, 1920, 380, 1912, 380, 1912, 392, 1976, 392, 1976, 448, 1968, 448, 1968, 456, 2160, 456, 2160, 448, 1984, 448, 1984, 264, 2160, 264, 2160, 256, 1328, 256)
 affect_navigation_mesh = true
 
