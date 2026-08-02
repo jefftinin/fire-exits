@@ -34,6 +34,7 @@ disabled = true
 debug_color = Color(0, 0.49411765, 0.5764706, 0.7764706)
 
 [node name="NavigationAgent2D" type="NavigationAgent2D" parent="PathArrow" unique_id=776805929]
+target_desired_distance = 2.0
 path_max_distance = 1000.0
 navigation_layers = 65535
 avoidance_enabled = true

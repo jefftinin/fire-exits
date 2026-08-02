@@ -66,3 +66,95 @@ position = Vector2(1465.7648, 1098.668)
 
 [node name="Exit3" type="Node2D" parent="Exits" unique_id=1423266175 groups=["Exits"]]
 position = Vector2(2819.854, 864.4937)
+
+[node name="Doors" type="Node2D" parent="." unique_id=1488029418]
+
+[node name="Door" type="Node2D" parent="Doors" unique_id=1229167106 groups=["Doors"]]
+position = Vector2(293.79626, 804.6682)
+
+[node name="Door2" type="Node2D" parent="Doors" unique_id=575828640 groups=["Doors"]]
+position = Vector2(638.0863, 802.7405)
+
+[node name="Door3" type="Node2D" parent="Doors" unique_id=762159965 groups=["Doors"]]
+position = Vector2(734.7913, 736.25287)
+
+[node name="Door4" type="Node2D" parent="Doors" unique_id=1250789141 groups=["Doors"]]
+position = Vector2(764.0006, 630.1909)
+
+[node name="Door5" type="Node2D" parent="Doors" unique_id=911114651 groups=["Doors"]]
+position = Vector2(939.1923, 669.4396)
+
+[node name="Door6" type="Node2D" parent="Doors" unique_id=125490834 groups=["Doors"]]
+position = Vector2(992, 700)
+
+[node name="Door7" type="Node2D" parent="Doors" unique_id=1422077548 groups=["Doors"]]
+position = Vector2(1408.7831, 541.0242)
+
+[node name="Door8" type="Node2D" parent="Doors" unique_id=1678012971 groups=["Doors"]]
+position = Vector2(1498.8815, 570.1864)
+
+[node name="Door9" type="Node2D" parent="Doors" unique_id=626360576 groups=["Doors"]]
+position = Vector2(1657.3156, 544.2884)
+
+[node name="Door10" type="Node2D" parent="Doors" unique_id=116466276 groups=["Doors"]]
+position = Vector2(1630.9823, 570.62146)
+
+[node name="Door11" type="Node2D" parent="Doors" unique_id=858657647 groups=["Doors"]]
+position = Vector2(1546.8405, 508.13196)
+
+[node name="Door12" type="Node2D" parent="Doors" unique_id=844356911 groups=["Doors"]]
+position = Vector2(2231.12, 588.2652)
+
+[node name="Door13" type="Node2D" parent="Doors" unique_id=1084396672 groups=["Doors"]]
+position = Vector2(2198.4646, 670.8371)
+
+[node name="Door14" type="Node2D" parent="Doors" unique_id=1823163966 groups=["Doors"]]
+position = Vector2(1940.9525, 695.09546)
+
+[node name="Door15" type="Node2D" parent="Doors" unique_id=632916609 groups=["Doors"]]
+position = Vector2(2339.0146, 695.34235)
+
+[node name="Door16" type="Node2D" parent="Doors" unique_id=17405507 groups=["Doors"]]
+position = Vector2(2636.1868, 802.05286)
+
+[node name="Door17" type="Node2D" parent="Doors" unique_id=1698256392 groups=["Doors"]]
+position = Vector2(2634.4387, 925.1777)
+
+[node name="Door18" type="Node2D" parent="Doors" unique_id=972987068 groups=["Doors"]]
+position = Vector2(2419.5852, 922.724)
+
+[node name="Door19" type="Node2D" parent="Doors" unique_id=1957181232 groups=["Doors"]]
+position = Vector2(2297.6138, 922.023)
+
+[node name="Door20" type="Node2D" parent="Doors" unique_id=488577575 groups=["Doors"]]
+position = Vector2(2137.088, 923.0745)
+
+[node name="Door21" type="Node2D" parent="Doors" unique_id=18407823 groups=["Doors"]]
+position = Vector2(1909.6171, 922.72394)
+
+[node name="Door22" type="Node2D" parent="Doors" unique_id=597451642 groups=["Doors"]]
+position = Vector2(1689.8573, 922.37317)
+
+[node name="Door23" type="Node2D" parent="Doors" unique_id=285786008 groups=["Doors"]]
+position = Vector2(1240.2224, 921.97076)
+
+[node name="Door24" type="Node2D" parent="Doors" unique_id=113601028 groups=["Doors"]]
+position = Vector2(1016, 922)
+
+[node name="Door25" type="Node2D" parent="Doors" unique_id=2090492219 groups=["Doors"]]
+position = Vector2(858.73456, 921.39154)
+
+[node name="Door26" type="Node2D" parent="Doors" unique_id=1085618007 groups=["Doors"]]
+position = Vector2(775.8906, 922.5502)
+
+[node name="Door27" type="Node2D" parent="Doors" unique_id=147758744 groups=["Doors"]]
+position = Vector2(618.8926, 922.83984)
+
+[node name="Door28" type="Node2D" parent="Doors" unique_id=335075256 groups=["Doors"]]
+position = Vector2(467.68777, 954.7029)
+
+[node name="Door29" type="Node2D" parent="Doors" unique_id=1726723306 groups=["Doors"]]
+position = Vector2(443.64566, 922.8398)
+
+[node name="Door30" type="Node2D" parent="Doors" unique_id=1073362593 groups=["Doors"]]
+position = Vector2(305.76547, 921.9709)

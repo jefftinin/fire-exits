@@ -13,8 +13,14 @@ enum NavState { SEEKING_EXIT, SEEKING_ASSEMBLY }
 var exits: Array[Node] = []
 var assemblies: Array[Node] = []
 var _nav_state: NavState = NavState.SEEKING_EXIT
+var doors: Array[Node] = [] 
 
 var _last_recorded_position: Vector2 = Vector2.INF
+
+## Tracks which axis is currently locked for cardinal movement.
+## 0 = none, 1 = X-axis, 2 = Y-axis. Prevents per-frame oscillation
+## between axes when distances are similar.
+var _locked_axis: int = 0
 
 func _ready() -> void:
 	_last_recorded_position = global_position
@@ -23,6 +29,7 @@ func _ready() -> void:
 ## Refreshes the cached exit and assembly target lists from scene groups.
 ## Call this after dynamically loading a new map so the agent can find new targets.
 func refresh_targets() -> void:
+	doors = get_tree().get_nodes_in_group("Doors")
 	exits = get_tree().get_nodes_in_group("Exits").filter(func(n): return is_instance_valid(n))
 	assemblies = get_tree().get_nodes_in_group("Assembly").filter(func(n): return is_instance_valid(n))
 	# Reset navigation state since targets have changed
@@ -40,6 +47,7 @@ func teleport_to(new_position: Vector2) -> void:
 	# Reset physics state for clean RigidBody2D teleport
 	linear_velocity = Vector2.ZERO
 	angular_velocity = 0.0
+	_locked_axis = 0
 	
 	# Move the body
 	global_position = new_position
@@ -162,14 +170,86 @@ func _handle_assembly_seeking() -> void:
 	
 	_move_toward_target()
 
+## Axis-alignment tolerance in pixels. When within this distance on an axis,
+## the arrow is considered "aligned" and will switch to the other axis.
+const AXIS_ALIGN_TOLERANCE: float = 4.0
+
+## Finds the nearest door to a given position from the cached doors list.
+## Returns the door's global position, or the fallback if no doors exist.
+func _find_nearest_door_position(to_position: Vector2, fallback: Vector2) -> Vector2:
+	if doors.is_empty():
+		return fallback
+	
+	var best_pos: Vector2 = fallback
+	var best_dist_sq: float = INF
+	
+	for door in doors:
+		if not is_instance_valid(door):
+			continue
+		if door is Node2D:
+			var door_pos := (door as Node2D).global_position
+			var dist_sq := door_pos.distance_squared_to(to_position)
+			if dist_sq < best_dist_sq:
+				best_dist_sq = dist_sq
+				best_pos = door_pos
+	
+	return best_pos
+
 func _move_toward_target() -> void:
 	# Get next path position from navigation agent
 	var next_path_position := navigation_agent_2d.get_next_path_position()
-	var nav_direction := (next_path_position - global_position).normalized()
 	
-	linear_velocity = nav_direction * speed
+	# Only snap to door positions when seeking exits, not when seeking assembly points.
+	# Snapping to doors during assembly seeking can cause the arrow to get stuck at doors
+	# instead of proceeding to the assembly coordinates.
+	var align_target: Vector2
+	if _nav_state == NavState.SEEKING_EXIT:
+		align_target = _find_nearest_door_position(next_path_position, next_path_position)
+	else:
+		align_target = next_path_position
+	var delta := align_target - global_position
 	
-	# Rotate to face movement direction
+	var x_aligned := absf(delta.x) <= AXIS_ALIGN_TOLERANCE
+	var y_aligned := absf(delta.y) <= AXIS_ALIGN_TOLERANCE
+	
+	# Determine cardinal movement direction with persistent axis-by-axis locking.
+	# Once an axis is chosen, it stays locked until aligned to prevent
+	# per-frame oscillation between axes when distances are similar.
+	var move_dir := Vector2.ZERO
+	
+	if x_aligned and y_aligned:
+		# Fully aligned with current target; nav agent will advance next frame
+		_locked_axis = 0
+		move_dir = Vector2.ZERO
+	elif x_aligned:
+		# X is done, must move on Y
+		_locked_axis = 2
+		move_dir = Vector2(0.0, signf(delta.y))
+	elif y_aligned:
+		# Y is done, must move on X
+		_locked_axis = 1
+		move_dir = Vector2(signf(delta.x), 0.0)
+	else:
+		# Both axes need travel — use persistent lock to avoid jitter
+		match _locked_axis:
+			1:
+				# Locked to X-axis
+				move_dir = Vector2(signf(delta.x), 0.0)
+			2:
+				# Locked to Y-axis
+				move_dir = Vector2(0.0, signf(delta.y))
+			_:
+				# No lock yet — choose dominant axis and commit
+				if absf(delta.x) >= absf(delta.y):
+					_locked_axis = 1
+					move_dir = Vector2(signf(delta.x), 0.0)
+				else:
+					_locked_axis = 2
+					move_dir = Vector2(0.0, signf(delta.y))
+	
+	linear_velocity = move_dir * speed
+	
+	# Rotate to face movement direction (snaps to 0°, 90°, 180°, -90°)
 	if linear_velocity.length_squared() > 0.0:
 		rotation = linear_velocity.angle()
 	
