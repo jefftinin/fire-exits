@@ -48,9 +48,9 @@ func _unhandled_input(event: InputEvent) -> void:
 				_last_pinch_distance = (points[0] as Vector2).distance_to(points[1] as Vector2)
 		else:
 			_active_touches.erase(st.index)
-			if _active_touches.size() < 2:
-				_last_pinch_distance = 0.0
-				
+			# Reset pinch distance immediately when finger is lifted to prevent jumping
+			_last_pinch_distance = 0.0
+			
 	elif event is InputEventScreenDrag:
 		var sd := event as InputEventScreenDrag
 		if not _active_touches.has(sd.index):

@@ -33,7 +33,7 @@ func _ready() -> void:
 
 	
 
-func _on_room_clicked(room: Room) -> void:
+func _on_room_clicked(room: Room, click_position: Vector2) -> void:
 	# Update the labels with room data
 	room_name_label.text = "You are here!"
 	room_info_label.text = room.room_name
@@ -48,21 +48,19 @@ func _on_room_clicked(room: Room) -> void:
 	var content_size := vbox_container.get_combined_minimum_size()
 	info_bubble.size = content_size
 	
-	# Position the info bubble at the mouse click position (screen/viewport coordinates)
-	# Since InfoBubble is a Control under Node2D, we need to account for camera transform
-	var viewport := get_viewport()
-	var mouse_pos := viewport.get_mouse_position()
-	
-	# Convert viewport mouse position to global canvas coordinates
+	# Convert viewport click position to global canvas coordinates
 	# This ensures the bubble appears exactly where clicked regardless of camera zoom/pan
+	var viewport := get_viewport()
 	var canvas_transform := viewport.get_canvas_transform()
-	var global_mouse_pos := canvas_transform.affine_inverse() * mouse_pos
+	
+	# Use the click position passed from the room signal (works for both mouse and touch)
+	var global_click_pos := canvas_transform.affine_inverse() * click_position
 	
 	# Position bubble centered above the clicked point
 	var bubble_offset := Vector2(-content_size.x / 2.0, -content_size.y)
-	info_bubble.global_position = global_mouse_pos + bubble_offset
+	info_bubble.global_position = global_click_pos + bubble_offset
 	info_bubble.visible = true
-	path_arrow.teleport_to(global_mouse_pos)
+	path_arrow.teleport_to(global_click_pos)
 	path_arrow.visible = true
 	trackline.visible = true
 
@@ -124,8 +122,11 @@ func _disconnect_signals_from_container(map_node: Node2D, container_name: String
 				child.room_clicked.disconnect(_on_room_clicked)
 
 func _unhandled_input(event: InputEvent) -> void:
-	# Handle left mouse button clicks
+	# Handle left mouse button clicks and touch input
 	if event is InputEventMouseButton and event.pressed:
 		if event.button_index == MOUSE_BUTTON_LEFT:
 			# Hide the info bubble when clicking outside any room
 			info_bubble.visible = false
+	elif event is InputEventScreenTouch and not event.pressed:
+		# Hide the info bubble when touching outside any room (touch end)
+		info_bubble.visible = false
