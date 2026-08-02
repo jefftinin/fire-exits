@@ -23,6 +23,10 @@ config/icon="res://icon.svg"
 window/stretch/mode="canvas_items"
 window/stretch/aspect="expand"
 
+[editor_plugins]
+
+enabled=PackedStringArray("res://addons/minimize_html_build/plugin.cfg")
+
 [global_group]
 
 Exits="Exit Nodes"
@@ -30,10 +34,6 @@ Exits="Exit Nodes"
 [input_devices]
 
 pointing/emulate_mouse_from_touch=false
-
-[navigation]
-
-2d/default_edge_connection_margin=10.0
 
 [physics]
 

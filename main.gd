@@ -12,7 +12,7 @@ func _ready() -> void:
 	info_bubble.visible = false
 	
 	# Connect to all room click signals
-	var rooms_node := $Rooms
+	var rooms_node := $'Radar/Rooms'
 	for child in rooms_node.get_children():
 		if child is Room:
 			child.room_clicked.connect(_on_room_clicked)

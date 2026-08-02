@@ -2,7 +2,6 @@
 
 [node name="UILayer" type="CanvasLayer" unique_id=365944592]
 layer = 0
-visible = false
 
 [node name="SearchUI" type="Control" parent="." unique_id=80647355]
 layout_mode = 3
