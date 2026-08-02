@@ -18,10 +18,6 @@ boot_splash/bg_color=Color(0.8217887, 0.82178867, 0.82178867, 1)
 boot_splash/image="uid://ce4ab8smdoc3t"
 config/icon="res://icon.svg"
 
-[debug]
-
-shapes/collision/shape_color=Color(0, 0.49411765, 0.5764706, 0.7764706)
-
 [display]
 
 window/stretch/mode="canvas_items"

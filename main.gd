@@ -1,5 +1,7 @@
 extends Node2D
 
+@onready var path_arrow: RigidBody2D = $PathArrow
+@onready var trackline: Line2D = $Line2D
 @onready var info_bubble: Control = $InfoBubble
 @onready var vbox_container: VBoxContainer = $InfoBubble/VBoxContainer
 @onready var room_name_label: Label = $InfoBubble/VBoxContainer/RoomName
@@ -17,8 +19,8 @@ func _ready() -> void:
 
 func _on_room_clicked(room: Room) -> void:
 	# Update the labels with room data
-	room_name_label.text = room.room_name
-	room_info_label.text = room.room_info
+	room_name_label.text = "You are here!"
+	room_info_label.text = room.room_name
 	
 	# Reset size to minimum to allow recalculation
 	info_bubble.size = Vector2.ZERO
@@ -44,9 +46,13 @@ func _on_room_clicked(room: Room) -> void:
 	var bubble_offset := Vector2(-content_size.x / 2.0, -content_size.y)
 	info_bubble.global_position = global_mouse_pos + bubble_offset
 	info_bubble.visible = true
+	path_arrow.teleport_to(global_mouse_pos)
+	path_arrow.visible = true
+	trackline.visible = true
 
 func _unhandled_input(event: InputEvent) -> void:
-	# Hide the info bubble when clicking outside any room
+	# Handle left mouse button clicks
 	if event is InputEventMouseButton and event.pressed:
 		if event.button_index == MOUSE_BUTTON_LEFT:
+			# Hide the info bubble when clicking outside any room
 			info_bubble.visible = false

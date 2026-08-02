@@ -1,6 +1,7 @@
 extends Area2D
 
 class_name Room
+@onready var label: Label = $Label
 
 @export var room_name: String = "Room"
 @export var room_info: String = "This is a room."
@@ -24,6 +25,7 @@ func _ready():
 	input_event.connect(_on_input_event)
 	mouse_entered.connect(_on_mouse_entered)
 	mouse_exited.connect(_on_mouse_exited)
+	label.text = room_name
 
 func _on_input_event(viewport: Viewport, event: InputEvent, shape_idx: int) -> void:
 	if event is InputEventMouseButton:
