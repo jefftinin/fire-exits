@@ -24,14 +24,9 @@ script = ExtResource("2_h2yge")
 [node name="UILayer" parent="." unique_id=365944592 instance=ExtResource("3_272bh")]
 
 [node name="PathArrow" type="RigidBody2D" parent="." unique_id=1170555964]
-visible = false
-position = Vector2(113, 390)
 gravity_scale = 0.0
 script = ExtResource("5_lquwl")
 speed = 200.0
-wall_detection_distance = 185.0
-wall_avoidance_strength = 5.0
-wall_ray_count = 20
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="PathArrow" unique_id=2078867091]
 shape = SubResource("CircleShape2D_vtma8")
