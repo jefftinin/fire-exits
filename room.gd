@@ -15,9 +15,12 @@ var default_modulate: Color
 
 # Drag detection
 var _press_position: Vector2 = Vector2.ZERO
-const CLICK_THRESHOLD: float = 10.0  # Max pixels mouse can move to still count as click
+const CLICK_THRESHOLD: float = 10.0  # Max pixels mouse/touch can move to still count as click
 
-signal room_clicked(room: Room)
+# Touch hover tracking
+var _touching: bool = false
+
+signal room_clicked(room: Room, click_position: Vector2)
 
 func _ready():
 	default_modulate = modulate
@@ -26,15 +29,41 @@ func _ready():
 	mouse_exited.connect(_on_mouse_exited)
 
 func _on_input_event(viewport: Viewport, event: InputEvent, shape_idx: int) -> void:
+	# Mouse click handling
 	if event is InputEventMouseButton:
-		if event.button_index == MOUSE_BUTTON_LEFT:
-			if event.pressed:
-				_press_position = event.position
+		var mb := event as InputEventMouseButton
+		if mb.button_index == MOUSE_BUTTON_LEFT:
+			if mb.pressed:
+				_press_position = mb.position
 			else:
 				# Only emit click if mouse didn't move significantly (not a drag)
-				if event.position.distance_to(_press_position) <= CLICK_THRESHOLD:
-					emit_signal("room_clicked", self)
+				if mb.position.distance_to(_press_position) <= CLICK_THRESHOLD:
+					emit_signal("room_clicked", self, mb.position)
 					viewport.set_input_as_handled()
+	
+	# Touch handling
+	elif event is InputEventScreenTouch:
+		var st := event as InputEventScreenTouch
+		if st.pressed:
+			_press_position = st.position
+			# Highlight when touched
+			if not _touching:
+				_touching = true
+				modulate = Color(1.2, 1.2, 1.2, 1.0)
+		else:
+			# Only emit click if touch didn't move significantly (not a drag/swipe)
+			if st.position.distance_to(_press_position) <= CLICK_THRESHOLD:
+				emit_signal("room_clicked", self, st.position)
+				viewport.set_input_as_handled()
+			# Remove highlight on touch release
+			_touching = false
+			modulate = default_modulate
+	
+	# Handle touch drag for hover effect
+	elif event is InputEventScreenDrag:
+		var sd := event as InputEventScreenDrag
+		# Check if touch is still within this room's area
+		# The Area2D will automatically handle input events only when touching it
 
 func _on_mouse_entered():
 	is_hovered = true
