@@ -75,27 +75,25 @@ func _find_nearest_reachable_target(candidates: Array[Node]) -> Node2D:
 		if candidate is Node2D:
 			var candidate_node := candidate as Node2D
 			
-			# Verify candidate is truly on the navmesh (strict check)
+			# Get the closest point on the navmesh to this candidate
 			var closest_to_candidate := NavigationServer2D.map_get_closest_point(map, candidate_node.global_position)
-			var reach_tolerance := navigation_agent_2d.radius + 2.0
-			if closest_to_candidate.distance_squared_to(candidate_node.global_position) > reach_tolerance * reach_tolerance:
+			
+			# Use a more generous tolerance for considering a target valid
+			# This allows targets placed near (but not exactly on) the navmesh
+			var reach_tolerance := max(navigation_agent_2d.radius, 50.0) + 10.0
+			if candidate_node.global_position.distance_squared_to(closest_to_candidate) > reach_tolerance * reach_tolerance:
 				continue
 			
-			# Compute actual navigable path to this candidate
+			# Compute actual navigable path to the closest point on navmesh (not the exact candidate position)
 			var path := NavigationServer2D.map_get_path(
 				map,
 				global_position,
-				candidate_node.global_position,
+				closest_to_candidate,
 				true  # optimize: true for shortest path
 			)
 			
 			# Skip unreachable candidates (empty path or only start point)
 			if path.size() < 2:
-				continue
-			
-			# Verify the path endpoint actually reaches near the candidate
-			var path_endpoint := path[path.size() - 1]
-			if path_endpoint.distance_squared_to(candidate_node.global_position) > reach_tolerance * reach_tolerance:
 				continue
 			
 			# Calculate total path length
@@ -132,7 +130,9 @@ func _physics_process(_delta: float) -> void:
 			# Check if navigation is complete (arrived at exit)
 			if navigation_agent_2d.is_navigation_finished():
 				_nav_state = NavState.SEEKING_ASSEMBLY
-				# Fall through to assembly seeking in same frame
+				# Force immediate replanning for assembly in next frame
+				navigation_agent_2d.target_position = global_position
+				await get_tree().physics_frame
 				_handle_assembly_seeking()
 				return
 			
