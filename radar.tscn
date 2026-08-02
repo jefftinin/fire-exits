@@ -154,7 +154,7 @@ position = Vector2(1624, 1284)
 position = Vector2(2309.3137, 1278.7588)
 
 [node name="Exit4" type="Node2D" parent="Exits" unique_id=1463522906 groups=["Exits"]]
-position = Vector2(1332, 496)
+position = Vector2(1312, 496)
 
 [node name="Exit10" type="Node2D" parent="Exits" unique_id=234386581 groups=["Exits"]]
 position = Vector2(1976, 236)
@@ -164,134 +164,134 @@ position = Vector2(1193.1816, 495.45456)
 
 [node name="Doors" type="Node2D" parent="." unique_id=820616991]
 
-[node name="Door" type="Node2D" parent="Doors" unique_id=2024421335]
+[node name="Door" type="Node2D" parent="Doors" unique_id=2024421335 groups=["Doors"]]
 position = Vector2(570.5758, 542.2981)
 
-[node name="Door2" type="Node2D" parent="Doors" unique_id=2048152944]
+[node name="Door2" type="Node2D" parent="Doors" unique_id=2048152944 groups=["Doors"]]
 position = Vector2(216.5904, 685.00024)
 
-[node name="Door3" type="Node2D" parent="Doors" unique_id=2104120331]
+[node name="Door3" type="Node2D" parent="Doors" unique_id=2104120331 groups=["Doors"]]
 position = Vector2(542.817, 685.7684)
 
-[node name="Door4" type="Node2D" parent="Doors" unique_id=1396496198]
+[node name="Door4" type="Node2D" parent="Doors" unique_id=1396496198 groups=["Doors"]]
 position = Vector2(330.31638, 741.67236)
 
-[node name="Door5" type="Node2D" parent="Doors" unique_id=1297446159]
+[node name="Door5" type="Node2D" parent="Doors" unique_id=1297446159 groups=["Doors"]]
 position = Vector2(292.0199, 1045.2601)
 
-[node name="Door6" type="Node2D" parent="Doors" unique_id=1768970906]
+[node name="Door6" type="Node2D" parent="Doors" unique_id=1768970906 groups=["Doors"]]
 position = Vector2(82.93977, 1045.2601)
 
-[node name="Door7" type="Node2D" parent="Doors" unique_id=1511394684]
+[node name="Door7" type="Node2D" parent="Doors" unique_id=1511394684 groups=["Doors"]]
 position = Vector2(568.91315, 1045.5146)
 
-[node name="Door8" type="Node2D" parent="Doors" unique_id=1435228184]
+[node name="Door8" type="Node2D" parent="Doors" unique_id=1435228184 groups=["Doors"]]
 position = Vector2(442.72952, 1272.7601)
 
-[node name="Door9" type="Node2D" parent="Doors" unique_id=487313237]
+[node name="Door9" type="Node2D" parent="Doors" unique_id=487313237 groups=["Doors"]]
 position = Vector2(1591.6787, 450.93066)
 
-[node name="Door10" type="Node2D" parent="Doors" unique_id=1668161314]
+[node name="Door10" type="Node2D" parent="Doors" unique_id=1668161314 groups=["Doors"]]
 position = Vector2(1688.8612, 415.56262)
 
-[node name="Door12" type="Node2D" parent="Doors" unique_id=323953311]
+[node name="Door12" type="Node2D" parent="Doors" unique_id=323953311 groups=["Doors"]]
 position = Vector2(1690.1835, 355.11557)
 
-[node name="Door13" type="Node2D" parent="Doors" unique_id=661537157]
+[node name="Door13" type="Node2D" parent="Doors" unique_id=661537157 groups=["Doors"]]
 position = Vector2(1688.6554, 289.31903)
 
-[node name="Door11" type="Node2D" parent="Doors" unique_id=1683239269]
+[node name="Door11" type="Node2D" parent="Doors" unique_id=1683239269 groups=["Doors"]]
 position = Vector2(1721.043, 452.52383)
 
-[node name="Door14" type="Node2D" parent="Doors" unique_id=1864882737]
+[node name="Door14" type="Node2D" parent="Doors" unique_id=1864882737 groups=["Doors"]]
 position = Vector2(1915.2318, 366.41797)
 
-[node name="Door15" type="Node2D" parent="Doors" unique_id=1156887406]
+[node name="Door15" type="Node2D" parent="Doors" unique_id=1156887406 groups=["Doors"]]
 position = Vector2(1951.7239, 451.73285)
 
-[node name="Door16" type="Node2D" parent="Doors" unique_id=1405517319]
+[node name="Door16" type="Node2D" parent="Doors" unique_id=1405517319 groups=["Doors"]]
 position = Vector2(2175.6748, 260.62442)
 
-[node name="Door17" type="Node2D" parent="Doors" unique_id=666196141]
+[node name="Door17" type="Node2D" parent="Doors" unique_id=666196141 groups=["Doors"]]
 position = Vector2(2176.3154, 452.36215)
 
-[node name="Door18" type="Node2D" parent="Doors" unique_id=75039405]
+[node name="Door18" type="Node2D" parent="Doors" unique_id=75039405 groups=["Doors"]]
 position = Vector2(2365.7065, 451.38916)
 
-[node name="Door19" type="Node2D" parent="Doors" unique_id=1610616970]
+[node name="Door19" type="Node2D" parent="Doors" unique_id=1610616970 groups=["Doors"]]
 position = Vector2(2243.034, 329.35358)
 
-[node name="Door20" type="Node2D" parent="Doors" unique_id=648392458]
+[node name="Door20" type="Node2D" parent="Doors" unique_id=648392458 groups=["Doors"]]
 position = Vector2(2305.167, 330.6281)
 
-[node name="Door21" type="Node2D" parent="Doors" unique_id=1753829911]
+[node name="Door21" type="Node2D" parent="Doors" unique_id=1753829911 groups=["Doors"]]
 position = Vector2(2364.1135, 330.94678)
 
-[node name="Door22" type="Node2D" parent="Doors" unique_id=1740639341]
+[node name="Door22" type="Node2D" parent="Doors" unique_id=1740639341 groups=["Doors"]]
 position = Vector2(2390.559, 350.38333)
 
-[node name="Door23" type="Node2D" parent="Doors" unique_id=1440538532]
+[node name="Door23" type="Node2D" parent="Doors" unique_id=1440538532 groups=["Doors"]]
 position = Vector2(2483.9702, 508.19275)
 
-[node name="Door24" type="Node2D" parent="Doors" unique_id=901686084]
+[node name="Door24" type="Node2D" parent="Doors" unique_id=901686084 groups=["Doors"]]
 position = Vector2(2483.2695, 583.8995)
 
-[node name="Door25" type="Node2D" parent="Doors" unique_id=1283507506]
+[node name="Door25" type="Node2D" parent="Doors" unique_id=1283507506 groups=["Doors"]]
 position = Vector2(1911.8569, 538.8617)
 
-[node name="Door26" type="Node2D" parent="Doors" unique_id=1981908641]
+[node name="Door26" type="Node2D" parent="Doors" unique_id=1981908641 groups=["Doors"]]
 position = Vector2(1978.0508, 574.54407)
 
-[node name="Door27" type="Node2D" parent="Doors" unique_id=47034115]
+[node name="Door27" type="Node2D" parent="Doors" unique_id=47034115 groups=["Doors"]]
 position = Vector2(1947.9783, 722.20703)
 
-[node name="Door28" type="Node2D" parent="Doors" unique_id=1539453758]
+[node name="Door28" type="Node2D" parent="Doors" unique_id=1539453758 groups=["Doors"]]
 position = Vector2(1976.5084, 891.075)
 
-[node name="Door29" type="Node2D" parent="Doors" unique_id=684235204]
+[node name="Door29" type="Node2D" parent="Doors" unique_id=684235204 groups=["Doors"]]
 position = Vector2(2355.33, 777.0441)
 
-[node name="Door30" type="Node2D" parent="Doors" unique_id=626880728]
+[node name="Door30" type="Node2D" parent="Doors" unique_id=626880728 groups=["Doors"]]
 position = Vector2(1864.677, 1002.59064)
 
-[node name="Door31" type="Node2D" parent="Doors" unique_id=1682705478]
+[node name="Door31" type="Node2D" parent="Doors" unique_id=1682705478 groups=["Doors"]]
 position = Vector2(2258.9185, 955.6563)
 
-[node name="Door32" type="Node2D" parent="Doors" unique_id=896202237]
+[node name="Door32" type="Node2D" parent="Doors" unique_id=896202237 groups=["Doors"]]
 position = Vector2(2391.4688, 954.7003)
 
-[node name="Door33" type="Node2D" parent="Doors" unique_id=1216521573]
+[node name="Door33" type="Node2D" parent="Doors" unique_id=1216521573 groups=["Doors"]]
 position = Vector2(2482.5972, 954.70044)
 
-[node name="Door34" type="Node2D" parent="Doors" unique_id=1825662507]
+[node name="Door34" type="Node2D" parent="Doors" unique_id=1825662507 groups=["Doors"]]
 position = Vector2(2389.5476, 619.7084)
 
-[node name="Door35" type="Node2D" parent="Doors" unique_id=1534840719]
+[node name="Door35" type="Node2D" parent="Doors" unique_id=1534840719 groups=["Doors"]]
 position = Vector2(2209.358, 1235.4711)
 
-[node name="Door36" type="Node2D" parent="Doors" unique_id=2081801905]
+[node name="Door36" type="Node2D" parent="Doors" unique_id=2081801905 groups=["Doors"]]
 position = Vector2(1624.2759, 958.7186)
 
-[node name="Door37" type="Node2D" parent="Doors" unique_id=1035509820]
+[node name="Door37" type="Node2D" parent="Doors" unique_id=1035509820 groups=["Doors"]]
 position = Vector2(1538.7866, 958.18634)
 
-[node name="Door38" type="Node2D" parent="Doors" unique_id=792093208]
+[node name="Door38" type="Node2D" parent="Doors" unique_id=792093208 groups=["Doors"]]
 position = Vector2(1563.5399, 1056.1456)
 
-[node name="Door39" type="Node2D" parent="Doors" unique_id=1006075323]
+[node name="Door39" type="Node2D" parent="Doors" unique_id=1006075323 groups=["Doors"]]
 position = Vector2(1536.119, 720.6933)
 
-[node name="Door40" type="Node2D" parent="Doors" unique_id=1783876820]
+[node name="Door40" type="Node2D" parent="Doors" unique_id=1783876820 groups=["Doors"]]
 position = Vector2(1559.3004, 631.7794)
 
-[node name="Door41" type="Node2D" parent="Doors" unique_id=2032316912]
+[node name="Door41" type="Node2D" parent="Doors" unique_id=2032316912 groups=["Doors"]]
 position = Vector2(1652.459, 762.76556)
 
-[node name="Door42" type="Node2D" parent="Doors" unique_id=1111326262]
+[node name="Door42" type="Node2D" parent="Doors" unique_id=1111326262 groups=["Doors"]]
 position = Vector2(2208, 236)
 
-[node name="Door43" type="Node2D" parent="Doors" unique_id=551398399]
+[node name="Door43" type="Node2D" parent="Doors" unique_id=551398399 groups=["Doors"]]
 position = Vector2(1561.6498, 285.94226)
 
-[node name="Door44" type="Node2D" parent="Doors" unique_id=351357971]
+[node name="Door44" type="Node2D" parent="Doors" unique_id=351357971 groups=["Doors"]]
 position = Vector2(1189.3143, 276.81897)

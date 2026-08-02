@@ -33,6 +33,7 @@ target/
 # Editors
 .vscode/
 .idea/
+.godot
 
 # System files
 .DS_Store
