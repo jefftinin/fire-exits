@@ -28,7 +28,7 @@ func _ready():
 	mouse_entered.connect(_on_mouse_entered)
 	mouse_exited.connect(_on_mouse_exited)
 
-func _on_input_event(viewport: Viewport, event: InputEvent, shape_idx: int) -> void:
+func _on_input_event(viewport: Viewport, event: InputEvent, _shape_idx: int) -> void:
 	# Mouse click handling
 	if event is InputEventMouseButton:
 		var mb := event as InputEventMouseButton
@@ -58,12 +58,6 @@ func _on_input_event(viewport: Viewport, event: InputEvent, shape_idx: int) -> v
 			# Remove highlight on touch release
 			_touching = false
 			modulate = default_modulate
-	
-	# Handle touch drag for hover effect
-	elif event is InputEventScreenDrag:
-		var sd := event as InputEventScreenDrag
-		# Check if touch is still within this room's area
-		# The Area2D will automatically handle input events only when touching it
 
 func _on_mouse_entered():
 	is_hovered = true

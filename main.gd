@@ -7,8 +7,6 @@ extends Node2D
 @onready var marker: Control = $Marker
 @onready var exit_panel: Control = $ExitPanel
 @onready var circle_indicator: TextureRect = $ExitPanel/MarkerSprite
-@onready var room_name_label: Label = $InfoBubble/VBoxContainer/RoomName
-@onready var room_info_label: Label = $InfoBubble/VBoxContainer/RoomInfo
 @onready var maplist: ItemList = $UILayer/Control/ItemList
 @onready var camera: Camera2D = $Camera2D
 @onready var ui_layer: UILayer = $UILayer
@@ -52,12 +50,58 @@ func _ready() -> void:
 		maplist.add_item(map_name)
 	maplist.item_selected.connect(_on_map_selected)
 	
-	# Select Radar by default (index 0)
-	maplist.select(0)
 	_trackline_index = trackline.get_index()
-	_load_map("Radar")
-
 	
+	# Read URL params for deep-linking (web export). Only read on initial load.
+	var params := _get_url_params()
+	
+	# Map selection: ?map=Radar or ?map=Tower
+	var map_name: String = str(params.get("map", "Radar"))
+	if not MAP_SCENES.has(map_name):
+		map_name = "Radar"
+	# Select it in the map list dropdown
+	for i in range(maplist.item_count):
+		if maplist.get_item_text(i) == map_name:
+			maplist.select(i)
+			break
+	_load_map(map_name)
+	
+	# Room selection: ?room=Office — navigate after a short delay so the map
+	# has time to render before the path/marker animation kicks in.
+	var room_name: String = str(params.get("room", ""))
+	if not room_name.is_empty():
+		get_tree().create_timer(2.0).timeout.connect(
+			func() -> void: _navigate_to_room_by_name(room_name)
+		)
+
+func _get_url_params() -> Dictionary:
+	if not OS.has_feature("web"):
+		return {}
+	var raw: String = JavaScriptBridge.eval("window.location.search")
+	var params := {}
+	var query := raw.trim_prefix("?")
+	if query.is_empty():
+		return params
+	for pair in query.split("&"):
+		var parts := pair.split("=", true, 1)
+		if parts.size() == 2:
+			params[parts[0].uri_decode()] = parts[1].uri_decode()
+	return params
+
+## Navigates to a room by name/alias on the currently loaded map. Matching is
+## case-insensitive and also checks alias names, consistent with search.
+func _navigate_to_room_by_name(room_name: String) -> void:
+	var target := room_name.strip_edges()
+	if target.is_empty() or _current_map == null:
+		return
+	for room in _gather_rooms(_current_map):
+		if str(room["name"]).to_lower() == target.to_lower():
+			navigate_to(room["position"])
+			return
+		for alias in room.get("aliases", []):
+			if str(alias).to_lower() == target.to_lower():
+				navigate_to(room["position"])
+				return
 
 func _on_room_clicked(room: Room, click_position: Vector2) -> void:
 	# Convert viewport click position to global canvas coordinates
