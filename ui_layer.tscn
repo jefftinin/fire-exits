@@ -1,9 +1,11 @@
 [gd_scene format=3 uid="uid://bmd2xbtcjixcu"]
 
 [ext_resource type="Texture2D" uid="uid://btwo43ynujl4i" path="res://assets/caaplogo-100.png" id="1_pxq32"]
+[ext_resource type="Script" uid="uid://bf3bdcpojili8" path="res://ui_layer.gd" id="2_script"]
 
 [node name="UILayer" type="CanvasLayer" unique_id=365944592]
 layer = 0
+script = ExtResource("2_script")
 
 [node name="Control" type="Control" parent="." unique_id=326597263]
 layout_mode = 3
@@ -119,9 +121,8 @@ texture = ExtResource("1_pxq32")
 [node name="PanelContainer" type="PanelContainer" parent="Control/VBoxContainer" unique_id=72341783]
 layout_mode = 2
 
-[node name="MenuButton" type="MenuButton" parent="Control/VBoxContainer/PanelContainer" unique_id=1579772862]
+[node name="MenuButton" type="Button" parent="Control/VBoxContainer/PanelContainer" unique_id=751376751]
 layout_mode = 2
-toggle_mode = false
 text = "About"
 
 [node name="Window" type="Window" parent="Control" unique_id=1590255501]
@@ -129,6 +130,7 @@ oversampling_override = 1.0
 title = "About"
 initial_position = 1
 size = Vector2i(804, 368)
+visible = false
 wrap_controls = true
 unresizable = true
 keep_title_visible = true
