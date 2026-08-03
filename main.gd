@@ -2,13 +2,14 @@ extends Node2D
 
 # const DASHED_LINE_SHADER := preload("res://shaders/dashed_line.gdshader")
 
-@onready var path_arrow: RigidBody2D = $PathArrow
+@onready var path_arrow: CharacterBody2D = $PathArrow
 @onready var trackline: Line2D = $Line2D
 @onready var info_bubble: Control = $InfoBubble
 @onready var vbox_container: VBoxContainer = $InfoBubble/VBoxContainer
 @onready var room_name_label: Label = $InfoBubble/VBoxContainer/RoomName
 @onready var room_info_label: Label = $InfoBubble/VBoxContainer/RoomInfo
 @onready var maplist: ItemList = $UILayer/ItemList
+@onready var camera: Camera2D = $Camera2D
 
 
 const MAP_SCENES: Dictionary = {
@@ -97,6 +98,11 @@ func _load_map(map_name: String) -> void:
 	
 	# Refresh navigation targets so PathArrow can find exits/assemblies in the new map
 	path_arrow.refresh_targets()
+	
+	# Zoom out to fit the full map sprite in view
+	var map_sprite: Sprite2D = _current_map.get_node_or_null("MapSprite") as Sprite2D
+	if map_sprite != null:
+		camera.fit_sprite(map_sprite)
 
 func _connect_room_signals(map_node: Node2D) -> void:
 	_connect_signals_from_container(map_node, "Rooms")

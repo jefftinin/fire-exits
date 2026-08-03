@@ -89,5 +89,3 @@ offset_bottom = 20.0
 grow_vertical = 2
 auto_width = true
 auto_height = true
-item_count = 1
-item_0/text = "test"

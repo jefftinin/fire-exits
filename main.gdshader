@@ -1,30 +1,32 @@
 shader_type canvas_item;
 
 // Uniforms allow you to tweak the effect in the Inspector
-uniform float dash_length : hint_range(0.01, 1.0) = 0.1;
-uniform float gap_length : hint_range(0.01, 1.0) = 0.1;
+// total_length should be updated by script whenever the Line2D changes.
+// UV.x is a fraction (0..1) along the line, so we multiply by total_length
+// to get a true pixel distance along the line. This keeps dash sizes fixed
+// regardless of how long the line grows.
+uniform float total_length : hint_range(0.0, 10000.0) = 100.0;
+uniform float dash_px : hint_range(1.0, 100.0) = 10.0;
+uniform float gap_px : hint_range(1.0, 100.0) = 10.0;
 uniform float speed : hint_range(-10.0, 10.0) = 1.0;
 uniform vec4 ant_color : source_color = vec4(1, 1, 1, 1);
 
 void fragment() {
-    // UV.x goes from 0.0 (start of line) to 1.0 (end of line)
-    // We multiply by a large number to get repeating segments along the line
-    float scale = 10.0; 
+    // Convert UV fraction to pixel distance along the line
+    float distance_along = UV.x * total_length;
     
-    // Calculate the total length of one dash+gap cycle
-    float cycle = dash_length + gap_length;
+    // Total length of one dash+gap cycle in pixels
+    float cycle_px = dash_px + gap_px;
     
-    // Create a scrolling coordinate system
-    // We multiply UV.x by scale to fit more dashes, then add TIME * speed to animate
-    float scroll = fract((UV.x * scale) + (TIME * speed));
+    // Create a scrolling coordinate system in pixel space
+    // (distance / cycle) gives which cycle we're in; TIME * speed animates it
+    float pos = fract(distance_along / cycle_px + (TIME * speed));
     
     // Determine if we are in a 'dash' or a 'gap'
-    // If the scrolled position is less than the dash ratio, it's visible
-    float dash_ratio = dash_length / cycle;
-    float mask = step(scroll, dash_ratio);
+    float dash_ratio = dash_px / cycle_px;
+    float mask = step(pos, dash_ratio);
     
     // Apply the mask to the alpha channel
-    // If mask is 0.0, we discard the pixel (make it transparent)
     if (mask < 0.5) {
         discard;
     }

@@ -13,9 +13,35 @@ var _last_pinch_distance: float = 0.0
 @export var zoom_max: float = 3.0
 @export var zoom_step: float = 0.1
 @export var zoom_smoothness: float = 8.0
+@export_range(0.5, 2.0, 0.01) var fit_zoom_scale: float = 1.0
 
 func _process(delta: float) -> void:
 	zoom = zoom.lerp(Vector2(_target_zoom, _target_zoom), zoom_smoothness * delta)
+
+func fit_sprite(sprite: Sprite2D) -> void:
+	var texture := sprite.texture
+	if texture == null:
+		return
+	var rect_size: Vector2
+	if sprite.region_enabled:
+		rect_size = sprite.region_rect.size
+	else:
+		rect_size = texture.get_size()
+	var world_size := rect_size * sprite.scale
+	var center_offset := sprite.offset
+	if not sprite.centered:
+		center_offset += rect_size / 2.0
+	var world_center := sprite.position + center_offset * sprite.scale
+	var world_rect := Rect2(world_center - world_size / 2.0, world_size)
+	fit_rect(world_rect)
+
+func fit_rect(world_rect: Rect2) -> void:
+	var viewport_size := get_viewport_rect().size
+	if viewport_size.x <= 0.0 or viewport_size.y <= 0.0 or world_rect.size.x <= 0.0 or world_rect.size.y <= 0.0:
+		return
+	var fit_zoom: float = minf(viewport_size.x / world_rect.size.x, viewport_size.y / world_rect.size.y)
+	_target_zoom = clampf(fit_zoom * fit_zoom_scale, zoom_min, zoom_max)
+	position = world_rect.get_center()
 
 func _unhandled_input(event: InputEvent) -> void:
 	# Mouse Controls
