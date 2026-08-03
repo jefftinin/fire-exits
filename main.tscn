@@ -83,6 +83,8 @@ offset_right = 100.0
 grow_horizontal = 2
 grow_vertical = 0
 
+[node name="Sprite2D" type="Sprite2D" parent="InfoBubble" unique_id=708113382]
+
 [node name="BubbleBackground" type="ColorRect" parent="InfoBubble" unique_id=2131572815]
 layout_mode = 1
 anchors_preset = 15

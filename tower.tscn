@@ -10,6 +10,13 @@ outlines = Array[PackedVector2Array]([PackedVector2Array(116, 812, 128, 812, 128
 
 [node name="Tower" type="Node2D" unique_id=1347959842]
 
+[node name="ColorRect" type="ColorRect" parent="." unique_id=1827437928]
+offset_left = -1519.9999
+offset_top = -723.99994
+offset_right = 7654.4375
+offset_bottom = 4159.3955
+mouse_filter = 2
+
 [node name="MapSprite" type="Sprite2D" parent="." unique_id=57565109]
 position = Vector2(1462.0001, 779.99994)
 scale = Vector2(0.6243434, 0.6266132)

@@ -8,7 +8,7 @@ extends Node2D
 @onready var vbox_container: VBoxContainer = $InfoBubble/VBoxContainer
 @onready var room_name_label: Label = $InfoBubble/VBoxContainer/RoomName
 @onready var room_info_label: Label = $InfoBubble/VBoxContainer/RoomInfo
-@onready var maplist: ItemList = $UILayer/ItemList
+@onready var maplist: ItemList = $UILayer/Control/ItemList
 @onready var camera: Camera2D = $Camera2D
 
 
