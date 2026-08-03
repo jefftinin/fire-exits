@@ -32,6 +32,10 @@ var _exit_breath_tween: Tween = null
 
 func _ready() -> void:
 
+	# White background for the whole 2D world (fills any resolution automatically,
+	# never tied to UI or world-element backgrounds).
+	RenderingServer.set_default_clear_color(Color.WHITE)
+
 	# Hide the info bubble initially
 	marker.visible = false
 	marker.scale = Vector2.ZERO
@@ -43,7 +47,7 @@ func _ready() -> void:
 	path_arrow.path_completed.connect(_on_path_completed)
 
 	# Navigate to a searched room when a suggestion is selected
-	ui_layer.room_selected.connect(navigate_to)
+	ui_layer.room_selected.connect(_on_room_selected)
 	
 	# Populate the map list
 	for map_name in MAP_SCENES:
@@ -70,7 +74,7 @@ func _ready() -> void:
 	# has time to render before the path/marker animation kicks in.
 	var room_name: String = str(params.get("room", ""))
 	if not room_name.is_empty():
-		get_tree().create_timer(2.0).timeout.connect(
+		get_tree().create_timer(0.0).timeout.connect(
 			func() -> void: _navigate_to_room_by_name(room_name)
 		)
 
@@ -187,6 +191,39 @@ func _on_path_completed() -> void:
 func _on_map_selected(index: int) -> void:
 	var selected_name := maplist.get_item_text(index)
 	_load_map(selected_name)
+	_update_url_for_map(selected_name)
+
+## Called when a search result is selected: navigates the marker/path arrow to
+## the room and updates the shareable URL so the selection is deep-linkable.
+func _on_room_selected(room_name: String, position: Vector2) -> void:
+	navigate_to(position)
+	_update_url_for_room(room_name)
+
+## Updates the URL's `map` parameter on web exports (uses history.replaceState
+## so the selection becomes deep-linkable without adding a history entry).
+func _update_url_for_map(map_name: String) -> void:
+	if not OS.has_feature("web"):
+		return
+	_update_url_query("map", map_name)
+
+## Updates the URL's `room` parameter on web exports.
+func _update_url_for_room(room_name: String) -> void:
+	if not OS.has_feature("web"):
+		return
+	_update_url_query("room", room_name)
+
+## Rebuilds ?map=...&room=... keeping existing params, then updates the URL.
+func _update_url_query(key: String, value: String) -> void:
+	var params := _get_url_params()
+	if value.is_empty():
+		params.erase(key)
+	else:
+		params[key] = value
+	var query_parts: PackedStringArray = []
+	for k in params:
+		query_parts.append("%s=%s" % [str(k).uri_encode(), str(params[k]).uri_encode()])
+	var new_query := "?" + "&".join(query_parts)
+	JavaScriptBridge.eval("history.replaceState(null, '', '%s')" % new_query)
 
 ## Pops the red EXIT panel in at the given world position using the same
 ## transition as the marker, then breathes the whole panel (circle + text)
