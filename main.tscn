@@ -13,7 +13,6 @@ radius = 23.086792
 script = ExtResource("1_lquwl")
 
 [node name="Camera2D" type="Camera2D" parent="." unique_id=117667258]
-zoom = Vector2(0.25, 0.25)
 limit_left = -1000
 limit_top = -1000
 limit_right = 4000
