@@ -19,12 +19,10 @@ mouse_filter = 2
 
 [node name="ItemList" type="ItemList" parent="Control" unique_id=425106234]
 layout_mode = 1
-anchors_preset = 0
 offset_left = 12.0
 offset_top = 12.0
 offset_right = 172.0
-offset_bottom = 212.0
-mouse_filter = 0
+offset_bottom = 76.0
 mouse_default_cursor_shape = 2
 
 [node name="SearchUI" type="Control" parent="Control" unique_id=80647355]
@@ -81,7 +79,6 @@ offset_top = -43.0
 offset_bottom = -68.0
 grow_horizontal = 2
 grow_vertical = 0
-mouse_filter = 0
 wraparound_items = false
 metadata/_edit_use_anchors_ = true
 
@@ -130,12 +127,10 @@ horizontal_alignment = 1
 
 [node name="VBoxContainer" type="VBoxContainer" parent="Control" unique_id=1418906441]
 layout_mode = 1
-anchors_preset = 0
 offset_left = 898.0
 offset_top = 12.0
 offset_right = 1152.0
 offset_bottom = 159.0
-mouse_filter = 1
 alignment = 1
 
 [node name="HBoxContainer" type="HBoxContainer" parent="Control/VBoxContainer" unique_id=1069898254]
@@ -166,7 +161,6 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-mouse_filter = 0
 
 [node name="Dim" type="ColorRect" parent="Control/AboutPanel" unique_id=1756300480]
 layout_mode = 1
@@ -175,7 +169,6 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-mouse_filter = 0
 color = Color(0, 0, 0, 0.45)
 
 [node name="AboutDialog" type="PanelContainer" parent="Control/AboutPanel" unique_id=1756300481]
@@ -185,13 +178,12 @@ anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = -260.0
-offset_top = -190.0
-offset_right = 260.0
-offset_bottom = 190.0
+offset_left = -320.0
+offset_top = -250.0
+offset_right = 320.0
+offset_bottom = 250.0
 grow_horizontal = 2
 grow_vertical = 2
-mouse_filter = 0
 
 [node name="MarginContainer" type="MarginContainer" parent="Control/AboutPanel/AboutDialog" unique_id=1756300482]
 layout_mode = 2
@@ -200,24 +192,28 @@ theme_override_constants/margin_top = 16
 theme_override_constants/margin_right = 16
 theme_override_constants/margin_bottom = 16
 
-[node name="VBoxContainer" type="VBoxContainer" parent="Control/AboutPanel/AboutDialog/MarginContainer" unique_id=1756300483]
+[node name="Content" type="Control" parent="Control/AboutPanel/AboutDialog/MarginContainer" unique_id=1756300489]
 layout_mode = 2
-theme_override_constants/separation = 8
 
-[node name="Title" type="Label" parent="Control/AboutPanel/AboutDialog/MarginContainer/VBoxContainer" unique_id=1756300484]
-layout_mode = 2
-text = "About Fire Exits"
-horizontal_alignment = 1
-
-[node name="Credits" type="RichTextLabel" parent="Control/AboutPanel/AboutDialog/MarginContainer/VBoxContainer" unique_id=1756300485]
-custom_minimum_size = Vector2(0, 120)
-layout_mode = 2
-size_flags_vertical = 3
+[node name="AboutText" type="RichTextLabel" parent="Control/AboutPanel/AboutDialog/MarginContainer/Content" unique_id=1756300490]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_bottom = -44.0
+grow_horizontal = 2
+grow_vertical = 2
 bbcode_enabled = true
-autowrap_mode = 2
-text = "Civil Aviation Authority of the Philippines
-Manila Control Tower Complex
-[b][color=red]Emergency Evacuation Plan[/color][/b]
+text = "[center][font_size=24][b]About Fire Exits[/b][/font_size][/center]
+
+[center][table=3]
+[cell][img=140]res://assets/about/caap.png[/img][/cell]
+[cell][img=140]res://assets/about/dagitlaya.png[/img][/cell]
+[cell][img=140]res://assets/about/catc.png[/img][/cell]
+[/table][/center]
+
+[center][b]Civil Aviation Authority of the Philippines[/b]
+[i]Manila Control Tower Complex[/i]
+[b]Emergency Evacuation Plan[/b][/center]
 
 [b]Credits[/b]
 Godot Engine 4.7.1 [url](https://godotengine.org)[/url]
@@ -226,18 +222,10 @@ by the Godot community and contributors
 MinimizeHTMLBuild 1.1.4 by aturbidflow
 MIT License, © 2025 Artem Markushev
 
-Place Marker icon by Icons8 
-[url]https://icons8.com[/url]"
+Place Marker icon by Icons8 [url](https://icons8.com)[/url]
 
-[node name="Devs" type="RichTextLabel" parent="Control/AboutPanel/AboutDialog/MarginContainer/VBoxContainer" unique_id=1756300486]
-custom_minimum_size = Vector2(0, 130)
-layout_mode = 2
-size_flags_vertical = 3
-bbcode_enabled = true
-autowrap_mode = 2
-text = "[b]Developed by[/b]
-OJT Group D
-Batch 45
+[b]Developed by[/b]
+OJT Group D, Batch 45
 
 El Shekinah M. Caños
 Alexandra F. Cunan
@@ -252,7 +240,17 @@ Mary Claire S. Saul
 Jeffrey C. Tininahan Jr.
 Frenchelle Kate D. Valledor"
 
-[node name="CloseButton" type="Button" parent="Control/AboutPanel/AboutDialog/MarginContainer/VBoxContainer" unique_id=1756300487]
-layout_mode = 2
+[node name="CloseButton" type="Button" parent="Control/AboutPanel/AboutDialog/MarginContainer/Content" unique_id=1756300491]
+layout_mode = 0
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -60.0
+offset_top = -36.0
+offset_right = 60.0
+offset_bottom = -4.0
+grow_horizontal = 2
+grow_vertical = 0
 size_flags_horizontal = 4
 text = "Close"

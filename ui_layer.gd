@@ -6,7 +6,7 @@ class_name UILayer
 @onready var about_panel: Control = $Control/AboutPanel
 @onready var about_dim: ColorRect = $Control/AboutPanel/Dim
 @onready var about_dialog: PanelContainer = $Control/AboutPanel/AboutDialog
-@onready var about_close_button: Button = $Control/AboutPanel/AboutDialog/MarginContainer/VBoxContainer/CloseButton
+@onready var about_close_button: Button = $Control/AboutPanel/AboutDialog/MarginContainer/Content/CloseButton
 
 @onready var zoom_controls: Control = $Control/ZoomControls
 @onready var zoom_in_button: Button = $Control/ZoomControls/ZoomPanel/ZoomVBox/ZoomInButton
@@ -29,6 +29,9 @@ class_name UILayer
 signal room_selected(room_name: String, position: Vector2)
 
 var _camera: Camera2D = null
+## Controls that should be disabled (non-interactive) while the About modal
+## is open so the user can only interact with the Close button.
+var _disablable_controls: Array[Control] = []
 var _updating_slider: bool = false
 var _rooms: Array[Dictionary] = []
 var _matches: Array[Dictionary] = []
@@ -137,7 +140,7 @@ func _relayout() -> void:
 
 	# --- Map list (top-left) ---
 	var ml_width: float = minf(map_list_width, w - safe_left - safe_right - 2.0 * screen_margin)
-	var ml_height: float = minf(map_list_height, h - safe_top - safe_bottom - 2.0 * screen_margin)
+	var ml_height: float = minf(_map_list_content_height(), h - safe_top - safe_bottom - 2.0 * screen_margin)
 	map_list.position = Vector2(safe_left + screen_margin, safe_top + screen_margin)
 	map_list.size = Vector2(maxf(50.0, ml_width), maxf(50.0, ml_height))
 
@@ -180,6 +183,12 @@ func _relayout() -> void:
 
 	_apply_about_dialog_size()
 
+## Height needed to show every map list row (plus a little padding) so the
+## list hugs its content instead of leaving blank space below the entries.
+func _map_list_content_height() -> float:
+	var rows: int = maxi(map_list.item_count, 1)
+	return rows * row_height + 8.0
+
 ## Approximates a control's intrinsic size (used before layout has run).
 func _measure_control(c: Control) -> Vector2:
 	var size := c.get_combined_minimum_size()
@@ -197,19 +206,25 @@ func _apply_about_dialog_size() -> void:
 	var margin := 24.0
 	var max_w: float = maxf(240.0, vp.x - margin * 2.0)
 	var max_h: float = maxf(180.0, vp.y - margin * 2.0)
-	var dlg_w: float = minf(520.0, max_w)
-	var dlg_h: float = minf(380.0, max_h)
+	var dlg_w: float = minf(640.0, max_w)
+	var dlg_h: float = minf(500.0, max_h)
 	about_dialog.size = Vector2(dlg_w, dlg_h)
 	about_dialog.position = Vector2((vp.x - dlg_w) * 0.5, (vp.y - dlg_h) * 0.5)
 
 func _on_about_pressed() -> void:
 	about_panel.visible = true
 	_apply_about_dialog_size()
+	_set_modal_blocking(true)
 
 func _on_about_close_requested() -> void:
 	about_panel.visible = false
+	_set_modal_blocking(false)
 
+## Consumes every input event that lands on the dim overlay so mouse/touch
+## never reaches the world (camera pan/zoom) or any UI underneath the modal.
 func _on_about_dim_input(event: InputEvent) -> void:
+	about_dim.accept_event()
+
 	# Tapping/clicking the dim background closes the dialog (mouse or touch)
 	var pressed: bool = false
 	if event is InputEventMouseButton:
@@ -218,6 +233,45 @@ func _on_about_dim_input(event: InputEvent) -> void:
 		pressed = (event as InputEventScreenTouch).pressed
 	if pressed:
 		about_panel.visible = false
+		_set_modal_blocking(false)
+
+## While the About modal is open, make every other UI control non-interactive
+## so the only thing the user can operate is the dialog itself (scroll + Close).
+func _set_modal_blocking(blocking: bool) -> void:
+	# Build the list lazily on first use.
+	if _disablable_controls.is_empty():
+		_disablable_controls = [
+			map_list,
+			search_panel.get_parent() as Control,
+			zoom_controls,
+			logo_vbox,
+		]
+	for control in _disablable_controls:
+		if control == null:
+			continue
+		control.mouse_filter = Control.MOUSE_FILTER_IGNORE if blocking else Control.MOUSE_FILTER_STOP
+
+	# Buttons/sliders/inputs also need to be explicitly disabled (not just
+	# ignoring mouse) so keyboard focus and wheel can't reach them either.
+	if blocking:
+		about_button.disabled = true
+		search_input.editable = false
+		search_input.focus_mode = Control.FOCUS_NONE
+		zoom_in_button.disabled = true
+		zoom_out_button.disabled = true
+		zoom_slider.editable = false
+	else:
+		about_button.disabled = false
+		search_input.editable = true
+		search_input.focus_mode = Control.FOCUS_ALL
+		zoom_in_button.disabled = false
+		zoom_out_button.disabled = false
+		zoom_slider.editable = true
+
+	# Block the camera's own input (wheel zoom, drag pan, pinch) while the
+	# modal is open so scrolling over the dialog can't zoom the world view.
+	if _camera != null:
+		_camera.set_input_enabled(not blocking)
 
 ## Sets the searchable room entries for the active map.
 ## Each entry is { "name": String, "position": Vector2 }.

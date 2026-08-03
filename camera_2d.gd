@@ -4,6 +4,10 @@ var _dragging: bool = false
 var _last_mouse_position: Vector2 = Vector2.ZERO
 var _target_zoom: float = 1.0
 
+## When false, the camera ignores all mouse/touch input (pan, zoom). Used to
+## block camera controls while a UI modal (e.g. the About dialog) is open.
+var _input_enabled: bool = true
+
 # Touch handling
 var _active_touches: Dictionary = {} # { index: position }
 var _last_pinch_distance: float = 0.0
@@ -61,7 +65,17 @@ func fit_rect(world_rect: Rect2) -> void:
 	_target_zoom = clampf(fit_zoom * fit_zoom_scale, zoom_min, zoom_max)
 	position = world_rect.get_center()
 
+## Enables or disables the camera's own input handling (pan/zoom). The UI
+## layer toggles this while a modal is open so scrolling/wheel can't zoom.
+func set_input_enabled(enabled: bool) -> void:
+	_input_enabled = enabled
+	if not _input_enabled:
+		_dragging = false
+		_active_touches.clear()
+
 func _unhandled_input(event: InputEvent) -> void:
+	if not _input_enabled:
+		return
 	# Mouse Controls
 	if event is InputEventMouseButton:
 		var mb := event as InputEventMouseButton
