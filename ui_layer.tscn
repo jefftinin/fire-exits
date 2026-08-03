@@ -1,6 +1,7 @@
 [gd_scene format=3 uid="uid://bmd2xbtcjixcu"]
 
 [ext_resource type="Texture2D" uid="uid://btwo43ynujl4i" path="res://assets/caaplogo-100.png" id="1_pxq32"]
+[ext_resource type="Texture2D" uid="uid://jturd6uowpmy" path="res://assets/manilacns100x.png" id="2_ibxbq"]
 [ext_resource type="Script" uid="uid://bf3bdcpojili8" path="res://ui_layer.gd" id="2_script"]
 
 [node name="UILayer" type="CanvasLayer" unique_id=365944592]
@@ -108,12 +109,20 @@ layout_mode = 1
 anchors_preset = 1
 anchor_left = 1.0
 anchor_right = 1.0
-offset_left = -47.0
-offset_bottom = 108.0
+offset_left = -254.0
+offset_bottom = 147.0
 grow_horizontal = 0
 alignment = 1
 
-[node name="Sprite2D" type="TextureRect" parent="Control/VBoxContainer" unique_id=1602823272]
+[node name="HBoxContainer" type="HBoxContainer" parent="Control/VBoxContainer" unique_id=1069898254]
+layout_mode = 2
+
+[node name="Sprite2D" type="TextureRect" parent="Control/VBoxContainer/HBoxContainer" unique_id=1602823272]
+layout_mode = 2
+mouse_filter = 2
+texture = ExtResource("2_ibxbq")
+
+[node name="Sprite2D2" type="TextureRect" parent="Control/VBoxContainer/HBoxContainer" unique_id=701181398]
 layout_mode = 2
 mouse_filter = 2
 texture = ExtResource("1_pxq32")
@@ -147,7 +156,7 @@ alignment = 1
 custom_minimum_size = Vector2(500, 0)
 layout_mode = 2
 bbcode_enabled = true
-text = "[b]Civil Aviation Authority of the Philippines[/b]
+text = "Civil Aviation Authority of the Philippines
 Manila Control Tower Complex
 [b][color=red]Emergency Evacuation Plan[/color][/b]
 

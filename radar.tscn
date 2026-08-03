@@ -11,10 +11,10 @@ outlines = Array[PackedVector2Array]([PackedVector2Array(2948, 0, 0, 0, 0, 1488,
 [node name="Radar" type="Node2D" unique_id=1675938871]
 
 [node name="ColorRect" type="ColorRect" parent="." unique_id=1643652377]
-offset_left = -1519.9999
-offset_top = -723.99994
-offset_right = 7654.4375
-offset_bottom = 4159.3955
+offset_left = -2836.0
+offset_top = -1452.0
+offset_right = 6338.4375
+offset_bottom = 3431.3955
 mouse_filter = 2
 
 [node name="MapSprite" type="Sprite2D" parent="." unique_id=1190141475]

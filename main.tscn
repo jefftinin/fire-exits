@@ -28,9 +28,11 @@ limit_right = 3500
 limit_bottom = 2000
 limit_smoothed = true
 script = ExtResource("2_h2yge")
+zoom_min = 0.3
 fit_zoom_scale = 0.9
 
 [node name="UILayer" parent="." unique_id=365944592 instance=ExtResource("3_272bh")]
+script = null
 
 [node name="PathArrow" type="CharacterBody2D" parent="." unique_id=1170555964]
 script = ExtResource("5_lquwl")
