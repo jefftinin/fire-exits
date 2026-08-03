@@ -6,6 +6,7 @@
 [ext_resource type="Texture2D" uid="uid://c0pd8pbnhynwj" path="res://icon.svg" id="4_1bvp3"]
 [ext_resource type="Script" uid="uid://bnxoev3el0o5o" path="res://path_arrow.gd" id="5_lquwl"]
 [ext_resource type="Shader" uid="uid://b0mkouthqsqbv" path="res://main.gdshader" id="6_7mycd"]
+[ext_resource type="Texture2D" uid="uid://bnwbkmqgn60qh" path="res://assets/icons8-place-marker-96.png" id="7_272bh"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_vtma8"]
 radius = 23.086792
@@ -32,9 +33,10 @@ zoom_min = 0.3
 fit_zoom_scale = 0.9
 
 [node name="UILayer" parent="." unique_id=365944592 instance=ExtResource("3_272bh")]
-script = null
+max_visible_rows = 6
 
 [node name="PathArrow" type="CharacterBody2D" parent="." unique_id=1170555964]
+visible = false
 script = ExtResource("5_lquwl")
 speed = 900.0
 
@@ -71,45 +73,29 @@ begin_cap_mode = 2
 end_cap_mode = 2
 antialiased = true
 
-[node name="InfoBubble" type="Control" parent="." unique_id=2110201360]
-visible = false
+[node name="Marker" type="Control" parent="." unique_id=2110201360]
 layout_mode = 3
-anchors_preset = 7
-anchor_left = 0.5
-anchor_top = 1.0
-anchor_right = 0.5
-anchor_bottom = 1.0
-offset_left = -100.0
-offset_top = -80.0
-offset_right = 100.0
-grow_horizontal = 2
-grow_vertical = 0
+anchors_preset = 0
+mouse_filter = 2
 
-[node name="Sprite2D" type="Sprite2D" parent="InfoBubble" unique_id=708113382]
+[node name="MarkerSprite" type="TextureRect" parent="Marker" unique_id=577421967]
+layout_mode = 0
+offset_left = -48.0
+offset_top = -96.0
+offset_right = 48.0
+mouse_filter = 2
+texture = ExtResource("7_272bh")
 
-[node name="BubbleBackground" type="ColorRect" parent="InfoBubble" unique_id=2131572815]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-color = Color(1, 1, 1, 0.9)
+[node name="Text2" type="PanelContainer" parent="Marker" unique_id=1207350220]
+layout_mode = 0
+offset_left = -52.0
+offset_top = -126.0
+offset_right = 52.0
+offset_bottom = -86.0
+mouse_filter = 2
 
-[node name="VBoxContainer" type="VBoxContainer" parent="InfoBubble" unique_id=1080356606]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-theme_override_constants/separation = 4
-alignment = 2
-
-[node name="RoomName" type="Label" parent="InfoBubble/VBoxContainer" unique_id=1425355296]
+[node name="You are here" type="Label" parent="Marker/Text2" unique_id=1425355296]
 modulate = Color(0, 0, 0, 1)
 layout_mode = 2
-
-[node name="RoomInfo" type="Label" parent="InfoBubble/VBoxContainer" unique_id=1544799212]
-modulate = Color(1.8169359e-06, 0.42687544, 2.8878452e-07, 1)
-layout_mode = 2
+text = "You are here!"
+horizontal_alignment = 1

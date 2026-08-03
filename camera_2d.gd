@@ -18,6 +18,24 @@ var _last_pinch_distance: float = 0.0
 func _process(delta: float) -> void:
 	zoom = zoom.lerp(Vector2(_target_zoom, _target_zoom), zoom_smoothness * delta)
 
+func zoom_in() -> void:
+	_target_zoom = clampf(_target_zoom + zoom_step, zoom_min, zoom_max)
+
+func zoom_out() -> void:
+	_target_zoom = clampf(_target_zoom - zoom_step, zoom_min, zoom_max)
+
+func zoom_to(value: float) -> void:
+	_target_zoom = clampf(value, zoom_min, zoom_max)
+
+func get_zoom_value() -> float:
+	return _target_zoom
+
+func get_zoom_min() -> float:
+	return zoom_min
+
+func get_zoom_max() -> float:
+	return zoom_max
+
 func fit_sprite(sprite: Sprite2D) -> void:
 	var texture := sprite.texture
 	if texture == null:

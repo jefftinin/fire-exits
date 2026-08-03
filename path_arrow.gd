@@ -8,6 +8,11 @@ extends CharacterBody2D
 @export var line_width: float = 4.0
 @export var min_point_distance: float = 5.0
 
+## Emitted when a new point is added to the drawn path.
+signal path_point_added(point: Vector2)
+## Emitted once when the arrow arrives at the assembly point.
+signal path_completed
+
 enum NavState { SEEKING_EXIT, SEEKING_ASSEMBLY }
 
 var exits: Array[Node] = []
@@ -41,6 +46,10 @@ const DECEL_RAMP_STEPS: float = 1.5
 ## between axes when distances are similar.
 var _locked_axis: int = 0
 
+## Tracks whether the arrow has arrived at the assembly point. Used to emit
+## path_completed only once.
+var _assembly_reached: bool = false
+
 func _ready() -> void:
 	_last_recorded_position = global_position
 	refresh_targets()
@@ -53,6 +62,7 @@ func refresh_targets() -> void:
 	assemblies = get_tree().get_nodes_in_group("Assembly").filter(func(n): return is_instance_valid(n))
 	# Reset navigation state since targets have changed
 	_nav_state = NavState.SEEKING_EXIT
+	_assembly_reached = false
 	navigation_agent_2d.target_position = Vector2.ZERO
 	# Targets have changed — invalidate the centered-position cache
 	_centered_cache.clear()
@@ -67,6 +77,7 @@ func teleport_to(new_position: Vector2) -> void:
 	
 	# Reset navigation state to start fresh
 	_nav_state = NavState.SEEKING_EXIT
+	_assembly_reached = false
 	
 	# Reset physics state for clean teleport
 	velocity = Vector2.ZERO
@@ -80,6 +91,19 @@ func teleport_to(new_position: Vector2) -> void:
 	navigation_agent_2d.target_position = new_position
 	await get_tree().physics_frame
 	navigation_agent_2d.target_position = saved_target
+
+## Returns the world position of the nearest reachable assembly target,
+## or the click/start position as a fallback if none are reachable.
+func get_assembly_target_position() -> Vector2:
+	if assemblies.is_empty():
+		return global_position
+	var best_assembly := _find_nearest_reachable_target(assemblies)
+	if best_assembly == null:
+		for assembly in assemblies:
+			if is_instance_valid(assembly) and assembly is Node2D:
+				return (assembly as Node2D).global_position
+		return global_position
+	return _get_centered_target_position(best_assembly)
 
 func _is_on_navigation_mesh(point: Vector2) -> bool:
 	var map := navigation_agent_2d.get_navigation_map()
@@ -272,6 +296,9 @@ func _handle_assembly_seeking() -> void:
 	var to_assembly := global_position - centered_assembly_pos
 	if absf(to_assembly.x) <= BASE_ALIGN_TOLERANCE and absf(to_assembly.y) <= BASE_ALIGN_TOLERANCE:
 		velocity = Vector2.ZERO
+		if not _assembly_reached:
+			_assembly_reached = true
+			path_completed.emit()
 		return
 	
 	_move_toward_target()
@@ -389,6 +416,7 @@ func _record_path_point() -> void:
 		line_2d.add_point(current_pos)
 		_last_recorded_position = current_pos
 		_update_total_length()
+		path_point_added.emit(current_pos)
 
 ## Recomputes the total arc length of the Line2D and feeds it to the shader.
 ## This keeps dash sizes fixed in pixels regardless of how long the line grows,

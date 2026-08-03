@@ -24,18 +24,18 @@ texture = ExtResource("1_klbcc")
 region_enabled = true
 region_rect = Rect2(197, 625, 4568, 2247)
 
-[node name="Rooms" type="Node" parent="." unique_id=232256808]
+[node name="TouchZone" type="Node" parent="." unique_id=232256808]
 
-[node name="map" type="Area2D" parent="Rooms" unique_id=594464964]
+[node name="map" type="Area2D" parent="TouchZone" unique_id=594464964]
 position = Vector2(28.847244, 126.01348)
 script = ExtResource("2_rlo7y")
 room_name = "Generator Room"
 room_info = "Room containing things"
 
-[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="Rooms/map" unique_id=2020459480]
+[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="TouchZone/map" unique_id=2020459480]
 polygon = PackedVector2Array(31.152756, 1289.9866, 583.1528, 1289.9866, 579.1528, 557.9865, 1123.1527, 557.9865, 1123.1527, 189.98651, 31.152756, 189.98651)
 
-[node name="CollisionPolygon2D2" type="CollisionPolygon2D" parent="Rooms/map" unique_id=1923154482]
+[node name="CollisionPolygon2D2" type="CollisionPolygon2D" parent="TouchZone/map" unique_id=1923154482]
 polygon = PackedVector2Array(1311.1527, 1153.9866, 2823.1528, 1153.9866, 2823.1528, 137.98651, 2175.1528, 137.98651, 2175.1528, -30.013481, 1947.1527, -30.013481, 1947.1527, 141.98651, 1311.1527, 141.98651)
 
 [node name="Assembly Areas" type="Node" parent="." unique_id=1106072746]
@@ -305,3 +305,83 @@ position = Vector2(1561.6498, 285.94226)
 
 [node name="Door44" type="Node2D" parent="Doors" unique_id=351357971 groups=["Doors"]]
 position = Vector2(1189.3143, 276.81897)
+
+[node name="Rooms" type="Node2D" parent="." unique_id=1604843243]
+
+[node name="Radar Equipment Room" type="Node2D" parent="Rooms" unique_id=2146070012]
+position = Vector2(184, 504)
+
+[node name="Comms Equiment Room" type="Node2D" parent="Rooms" unique_id=1016521892]
+position = Vector2(465.21002, 429.41998)
+
+[node name="UPS Room" type="Node2D" parent="Rooms" unique_id=1170125930]
+position = Vector2(184.86478, 880.6497)
+
+[node name="Electrical Room" type="Node2D" parent="Rooms" unique_id=322658583]
+position = Vector2(462.55072, 886.4348)
+
+[node name="Battery Room" type="Node2D" parent="Rooms" unique_id=1606296639]
+position = Vector2(185.69124, 1169.9058)
+
+[node name="ALPT Workshop" type="Node2D" parent="Rooms" unique_id=291893022]
+position = Vector2(456.7656, 1127.7571)
+
+[node name="FIC Office" type="Node2D" parent="Rooms" unique_id=186122015]
+position = Vector2(508.00525, 1231.8894)
+
+[node name="ALPT Maintenance Office" type="Node2D" parent="Rooms" unique_id=930941151]
+position = Vector2(413.2945, 1362.9637)
+
+[node name="Generator Room" type="Node2D" parent="Rooms" unique_id=887435788]
+position = Vector2(872.4545, 504.36362)
+
+[node name="ANS Men\'s Room" type="Node2D" parent="Rooms" unique_id=1645585460]
+position = Vector2(1448.3119, 370.6304)
+
+[node name="CCU Room" type="Node2D" parent="Rooms" unique_id=50857450]
+position = Vector2(1441.493, 631.4741)
+
+[node name="ANS - Maintenance Room" type="Node2D" parent="Rooms" unique_id=592310051]
+position = Vector2(1813.1101, 637.14984)
+
+[node name="Old Comms Room" type="Node2D" parent="Rooms" unique_id=1136884782]
+position = Vector2(2173.6902, 629.88983)
+
+[node name="Computer Room" type="Node2D" parent="Rooms" unique_id=1299168957]
+position = Vector2(2115.6099, 887.61975)
+
+[node name="ANS Ladies Room" type="Node2D" parent="Rooms" unique_id=1755926983]
+position = Vector2(1862.7197, 838.00977)
+
+[node name="Briefing and Control Room" type="Node2D" parent="Rooms" unique_id=256755813]
+position = Vector2(1854.2495, 962.6397)
+
+[node name="Storage Room" type="Node2D" parent="Rooms" unique_id=242217628]
+position = Vector2(1696.9496, 862.2098)
+
+[node name="TRDPS Room" type="Node2D" parent="Rooms" unique_id=559296308]
+position = Vector2(1448, 1124)
+
+[node name="IFR Control Room" type="Node2D" parent="Rooms" unique_id=973001445]
+position = Vector2(1883.8181, 1133.8181)
+
+[node name="ATC Training Room" type="Node2D" parent="Rooms" unique_id=513925829]
+position = Vector2(2680.025, 1110.9089)
+
+[node name="ATC Office" type="Node2D" parent="Rooms" unique_id=1321081464]
+position = Vector2(2668.4546, 790.24805)
+
+[node name="ATS Men\'s Locker Room" type="Node2D" parent="Rooms" unique_id=2028484275]
+position = Vector2(2671.5378, 409.64938)
+
+[node name="Dining Room" type="Node2D" parent="Rooms" unique_id=937482489]
+position = Vector2(2081.5886, 354.55862)
+
+[node name="Kitchen" type="Node2D" parent="Rooms" unique_id=1992689158]
+position = Vector2(2085.0032, 176.9751)
+
+[node name="ATS Ladies Room" type="Node2D" parent="Rooms" unique_id=1680238056]
+position = Vector2(1830.9221, 359.3397)
+
+[node name="ANS Maintenance Room" type="Node2D" parent="Rooms" unique_id=2088343515]
+position = Vector2(1440.5043, 826.67993)
