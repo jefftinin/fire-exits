@@ -1,7 +1,5 @@
 extends Node2D
 
-# const DASHED_LINE_SHADER := preload("res://shaders/dashed_line.gdshader")
-
 @onready var path_arrow: CharacterBody2D = $PathArrow
 @onready var trackline: Line2D = $Line2D
 @onready var marker: Control = $Marker
@@ -16,10 +14,16 @@ extends Node2D
 @export var path_fit_padding: float = 160.0
 
 
+## Map name → scene path. Scenes are loaded lazily on first use so the web
+## export only downloads the active map, not all of them at startup.
 const MAP_SCENES: Dictionary = {
-	"Radar": preload("res://radar.tscn"),
-	"Tower": preload("res://tower.tscn"),
+	"Radar": "res://radar.tscn",
+	"Tower": "res://tower.tscn",
 }
+
+## Cache of loaded map scenes by name. Populated on demand to keep the
+## initial download small.
+var _map_scenes_loaded: Dictionary = {}
 
 var _current_map: Node2D = null
 var _trackline_index: int = -1
@@ -270,6 +274,15 @@ func _hide_exit_panel() -> void:
 	exit_panel.visible = false
 	exit_panel.scale = Vector2.ZERO
 
+## Loads (and caches) the map scene for `map_name`. Loads on first use so the
+## web export fetches only the maps the user actually opens.
+func _get_map_scene(map_name: String) -> PackedScene:
+	if _map_scenes_loaded.has(map_name):
+		return _map_scenes_loaded[map_name]
+	var scene := load(MAP_SCENES[map_name]) as PackedScene
+	_map_scenes_loaded[map_name] = scene
+	return scene
+
 func _load_map(map_name: String) -> void:
 	if not MAP_SCENES.has(map_name):
 		push_error("Unknown map: %s" % map_name)
@@ -289,7 +302,7 @@ func _load_map(map_name: String) -> void:
 		_current_map = null
 	
 	# Instantiate and add the new map
-	var scene: PackedScene = MAP_SCENES[map_name]
+	var scene: PackedScene = _get_map_scene(map_name)
 	_current_map = scene.instantiate() as Node2D
 	add_child(_current_map)
 	move_child(_current_map, _trackline_index -1 )

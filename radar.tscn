@@ -1,6 +1,6 @@
 [gd_scene format=3 uid="uid://d4hwgvdbg4a0j"]
 
-[ext_resource type="Texture2D" uid="uid://85vokbaagad7" path="res://assets/bgradar.jpg" id="1_klbcc"]
+[ext_resource type="Texture2D" uid="uid://w0igc3vcjakq" path="res://assets/bgradar.webp" id="1_klbcc"]
 [ext_resource type="Script" uid="uid://blgk000347yrr" path="res://room.gd" id="2_rlo7y"]
 
 [sub_resource type="NavigationPolygon" id="NavigationPolygon_brh4u"]

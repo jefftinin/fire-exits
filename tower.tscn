@@ -1,6 +1,6 @@
 [gd_scene format=3 uid="uid://wn20icx7db3f"]
 
-[ext_resource type="Texture2D" uid="uid://co4aq48vxyyo7" path="res://assets/bgtower.jpg" id="1_vedim"]
+[ext_resource type="Texture2D" uid="uid://bq3qnjohdm6rp" path="res://assets/bgtower.webp" id="1_vedim"]
 [ext_resource type="Script" uid="uid://blgk000347yrr" path="res://room.gd" id="2_stebd"]
 
 [sub_resource type="NavigationPolygon" id="NavigationPolygon_kek77"]
