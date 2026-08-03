@@ -7,6 +7,7 @@
 [ext_resource type="Script" uid="uid://bnxoev3el0o5o" path="res://path_arrow.gd" id="5_lquwl"]
 [ext_resource type="Shader" uid="uid://b0mkouthqsqbv" path="res://main.gdshader" id="6_7mycd"]
 [ext_resource type="Texture2D" uid="uid://b4jya4hqlhc8h" path="res://assets/icons8-map-pin-100.png" id="7_272bh"]
+[ext_resource type="Texture2D" uid="uid://diyio3xvniv7q" path="res://assets/circle.png" id="8_5vw27"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_vtma8"]
 radius = 23.086792
@@ -106,4 +107,35 @@ theme_override_styles/panel = SubResource("StyleBoxFlat_red")
 layout_mode = 2
 theme_override_colors/font_color = Color(1, 1, 1, 1)
 text = "You are here!"
+horizontal_alignment = 1
+
+[node name="ExitPanel" type="Control" parent="." unique_id=1393956250]
+layout_mode = 3
+anchors_preset = 0
+mouse_filter = 2
+
+[node name="MarkerSprite" type="TextureRect" parent="ExitPanel" unique_id=754330500]
+layout_mode = 0
+offset_left = -22.0
+offset_top = -22.0
+offset_right = 22.0
+offset_bottom = 22.0
+mouse_filter = 2
+texture = ExtResource("8_5vw27")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Text Panel" type="PanelContainer" parent="ExitPanel" unique_id=1980660908]
+layout_mode = 0
+offset_left = -52.0
+offset_top = 41.0
+offset_right = 52.0
+offset_bottom = 81.0
+mouse_filter = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_red")
+
+[node name="EXIT" type="Label" parent="ExitPanel/Text Panel" unique_id=580721960]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+text = "EXIT"
 horizontal_alignment = 1

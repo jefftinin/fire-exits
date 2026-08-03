@@ -2,6 +2,7 @@ extends CharacterBody2D
 
 @onready var nav: NavigationAgent2D = $NavigationAgent2D
 @onready var line: Line2D = $"../Line2D"
+@onready var polygon: Polygon2D = $Polygon2D
 
 @export var speed: float = 500.0
 @export var min_point_distance: float = 5.0
@@ -23,6 +24,7 @@ var _nav_state: NavState = NavState.SEEKING_EXIT
 var _last_recorded: Vector2 = Vector2.INF
 var _locked_axis: int = 0        # 0=none, 1=X, 2=Y (persistent, anti-jitter)
 var _assembly_reached: bool = false
+var _navigation_active: bool = false # seeking only after teleport_to()
 
 ## Cached centered positions keyed by node instance ID. Exit/assembly nodes are
 ## static, so centering is computed once to avoid batch NavigationServer2D
@@ -32,14 +34,23 @@ var _centered_cache: Dictionary = {}
 func _ready() -> void:
 	_last_recorded = global_position
 	refresh_targets()
+	polygon.visible = true
 
 ## Re-cache scene group targets. Call after dynamically loading a new map.
+## Puts the arrow into a fully idle state: it will not seek nor emit
+## path_completed until an explicit navigation (teleport_to) re-arms it.
 func refresh_targets() -> void:
 	exits = get_tree().get_nodes_in_group("Exits").filter(_valid)
 	assemblies = get_tree().get_nodes_in_group("Assembly").filter(_valid)
 	_nav_state = NavState.SEEKING_EXIT
-	_assembly_reached = false
+	_assembly_reached = true     # prevent immediate path_completed
+	_navigation_active = false   # do not seek until told to
 	nav.target_position = Vector2.ZERO
+	velocity = Vector2.ZERO
+	line.clear_points()
+	_update_total_length()
+	_last_recorded = global_position
+	polygon.visible = true
 	_centered_cache.clear()
 
 func _valid(n: Node) -> bool:
@@ -47,6 +58,8 @@ func _valid(n: Node) -> bool:
 
 func teleport_to(new_position: Vector2) -> void:
 	# Clear the drawn path and all stale state, then move the body.
+	_navigation_active = true    # arm seeking on navigation
+	polygon.visible = true
 	line.clear_points()
 	_update_total_length()
 	_last_recorded = new_position
@@ -75,6 +88,9 @@ func get_assembly_target_position() -> Vector2:
 	return global_position
 
 func _physics_process(_delta: float) -> void:
+	if not _navigation_active:
+		velocity = Vector2.ZERO
+		return
 	if not nav.get_navigation_map().is_valid():
 		velocity = Vector2.ZERO
 		return
@@ -88,6 +104,7 @@ func _physics_process(_delta: float) -> void:
 				velocity = Vector2.ZERO
 				if not _assembly_reached:
 					_assembly_reached = true
+					polygon.visible = false  # the ExitPanel circle takes over
 					path_completed.emit()
 
 ## Steers toward the nearest reachable candidate's centered aim point.

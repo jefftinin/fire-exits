@@ -5,6 +5,8 @@ extends Node2D
 @onready var path_arrow: CharacterBody2D = $PathArrow
 @onready var trackline: Line2D = $Line2D
 @onready var marker: Control = $Marker
+@onready var exit_panel: Control = $ExitPanel
+@onready var circle_indicator: TextureRect = $ExitPanel/MarkerSprite
 @onready var room_name_label: Label = $InfoBubble/VBoxContainer/RoomName
 @onready var room_info_label: Label = $InfoBubble/VBoxContainer/RoomInfo
 @onready var maplist: ItemList = $UILayer/Control/ItemList
@@ -25,11 +27,18 @@ var _current_map: Node2D = null
 var _trackline_index: int = -1
 var _camera_fit_rect: Rect2 = Rect2()
 var _camera_fit_active: bool = false
+var _marker_tween: Tween = null
+var _marker_breath_tween: Tween = null
+var _exit_tween: Tween = null
+var _exit_breath_tween: Tween = null
 
 func _ready() -> void:
 
 	# Hide the info bubble initially
 	marker.visible = false
+	marker.scale = Vector2.ZERO
+	_stop_breathing()
+	_hide_exit_panel()
 
 	# Track drawn path points so the camera can keep the whole path in view
 	path_arrow.path_point_added.connect(_on_path_point_added)
@@ -65,7 +74,8 @@ func _on_room_clicked(room: Room, click_position: Vector2) -> void:
 func navigate_to(global_pos: Vector2) -> void:
 	# Marker sprite center is at marker origin, so position directly at point
 	marker.global_position = global_pos
-	marker.visible = true
+	_play_marker_pop()
+	_hide_exit_panel()
 	path_arrow.teleport_to(global_pos)
 	path_arrow.visible = true
 	trackline.visible = true
@@ -78,6 +88,37 @@ func navigate_to(global_pos: Vector2) -> void:
 	var assembly_pos: Vector2 = path_arrow.get_assembly_target_position()
 	_camera_fit_rect = _camera_fit_rect.expand(assembly_pos)
 	_apply_camera_fit()
+
+## Pops the marker in with a bouncy scale-up from the pin tip, then starts
+## the idle breathing loop.
+func _play_marker_pop() -> void:
+	# Kill any in-flight animation so rapid re-clicks don't conflict
+	if _marker_tween != null:
+		_marker_tween.kill()
+	_stop_breathing()
+	marker.visible = true
+	marker.scale = Vector2.ZERO
+	_marker_tween = create_tween()
+	_marker_tween.set_trans(Tween.TRANS_BACK)
+	_marker_tween.set_ease(Tween.EASE_OUT)
+	_marker_tween.tween_property(marker, "scale", Vector2.ONE, 0.35)
+	_marker_tween.tween_callback(_start_breathing)
+
+## Keeps the marker gently pulsing while idle.
+func _start_breathing() -> void:
+	if not marker.visible or _marker_breath_tween != null:
+		return
+	_marker_breath_tween = create_tween().set_loops()
+	_marker_breath_tween.set_trans(Tween.TRANS_SINE)
+	_marker_breath_tween.set_ease(Tween.EASE_IN_OUT)
+	_marker_breath_tween.tween_property(marker, "scale", Vector2(1.08, 1.08), 0.9)
+	_marker_breath_tween.tween_property(marker, "scale", Vector2.ONE, 0.9)
+
+## Stops the idle breathing loop.
+func _stop_breathing() -> void:
+	if _marker_breath_tween != null:
+		_marker_breath_tween.kill()
+		_marker_breath_tween = null
 
 ## Fits the camera to the accumulated path bounds if tracking is active.
 func _apply_camera_fit() -> void:
@@ -93,13 +134,60 @@ func _on_path_point_added(point: Vector2) -> void:
 	_camera_fit_rect = _camera_fit_rect.expand(point)
 	_apply_camera_fit()
 
-## Called when the arrow reaches the assembly point; stops further refits.
+## Called when the arrow reaches the assembly point; stops further refits and
+## shows the EXIT destination panel over the final resting spot.
 func _on_path_completed() -> void:
 	_camera_fit_active = false
+	_show_exit_panel(path_arrow.global_position)
 
 func _on_map_selected(index: int) -> void:
 	var selected_name := maplist.get_item_text(index)
 	_load_map(selected_name)
+
+## Pops the red EXIT panel in at the given world position using the same
+## transition as the marker, then breathes the whole panel (circle + text)
+## like the Marker node.
+func _show_exit_panel(world_pos: Vector2) -> void:
+	# The panel mirrors the Marker layout: its origin is the sprite center, so
+	# position directly at the point (like the Marker is positioned in
+	# navigate_to).
+	exit_panel.global_position = world_pos
+	exit_panel.visible = true
+	if _exit_tween != null:
+		_exit_tween.kill()
+	_stop_exit_breathing()
+	exit_panel.scale = Vector2.ZERO
+	# Pop the panel as a whole with the marker's bounce.
+	_exit_tween = create_tween()
+	_exit_tween.set_trans(Tween.TRANS_BACK)
+	_exit_tween.set_ease(Tween.EASE_OUT)
+	_exit_tween.tween_property(exit_panel, "scale", Vector2.ONE, 0.35)
+	_exit_tween.tween_callback(_start_exit_breathing)
+
+## Keeps the whole EXIT panel gently pulsing while idle, matching the marker.
+func _start_exit_breathing() -> void:
+	if not exit_panel.visible or _exit_breath_tween != null:
+		return
+	_exit_breath_tween = create_tween().set_loops()
+	_exit_breath_tween.set_trans(Tween.TRANS_SINE)
+	_exit_breath_tween.set_ease(Tween.EASE_IN_OUT)
+	_exit_breath_tween.tween_property(exit_panel, "scale", Vector2(1.08, 1.08), 0.9)
+	_exit_breath_tween.tween_property(exit_panel, "scale", Vector2.ONE, 0.9)
+
+## Stops the panel's idle breathing loop.
+func _stop_exit_breathing() -> void:
+	if _exit_breath_tween != null:
+		_exit_breath_tween.kill()
+		_exit_breath_tween = null
+
+## Hides the EXIT panel and kills any in-flight tween.
+func _hide_exit_panel() -> void:
+	if _exit_tween != null:
+		_exit_tween.kill()
+		_exit_tween = null
+	_stop_exit_breathing()
+	exit_panel.visible = false
+	exit_panel.scale = Vector2.ZERO
 
 func _load_map(map_name: String) -> void:
 	if not MAP_SCENES.has(map_name):
@@ -108,6 +196,9 @@ func _load_map(map_name: String) -> void:
 	
 	# Hide UI elements when switching maps
 	marker.visible = false
+	marker.scale = Vector2.ZERO
+	_stop_breathing()
+	_hide_exit_panel()
 	path_arrow.visible = false
 	trackline.visible = false
 	
