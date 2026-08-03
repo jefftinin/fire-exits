@@ -10,12 +10,19 @@
 [sub_resource type="CircleShape2D" id="CircleShape2D_vtma8"]
 radius = 23.086792
 
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_51ij6"]
+shader = ExtResource("6_7mycd")
+shader_parameter/dash_length = 0.1
+shader_parameter/gap_length = 0.1
+shader_parameter/speed = 1.0
+shader_parameter/ant_color = Color(1, 1, 1, 1)
+
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_mow34"]
 shader = ExtResource("6_7mycd")
 shader_parameter/dash_length = 0.1
 shader_parameter/gap_length = 0.1
 shader_parameter/speed = -0.6819995573950006
-shader_parameter/ant_color = Color(0, 1, 1, 1)
+shader_parameter/ant_color = Color(1, 0, 0, 1)
 
 [node name="Map" type="Node2D" unique_id=1545570361]
 script = ExtResource("1_lquwl")
@@ -53,6 +60,10 @@ debug_path_custom_line_width = 3.46
 [node name="Sprite2D" type="Sprite2D" parent="PathArrow" unique_id=1382518832]
 scale = Vector2(0.5, 0.5)
 texture = ExtResource("4_1bvp3")
+
+[node name="Polygon2D" type="Polygon2D" parent="PathArrow" unique_id=1412480642]
+material = SubResource("ShaderMaterial_51ij6")
+polygon = PackedVector2Array(0, -20, 20, 0, 0, 20)
 
 [node name="Line2D" type="Line2D" parent="." unique_id=965704033]
 visible = false

@@ -4,7 +4,7 @@ shader_type canvas_item;
 uniform float dash_length : hint_range(0.01, 1.0) = 0.1;
 uniform float gap_length : hint_range(0.01, 1.0) = 0.1;
 uniform float speed : hint_range(-10.0, 10.0) = 1.0;
-uniform vec4 ant_color : source_color = vec4(1.0, 1.0, 1.0, 1.0);
+uniform vec4 ant_color : source_color = vec4(1, 1, 1, 1);
 
 void fragment() {
     // UV.x goes from 0.0 (start of line) to 1.0 (end of line)
