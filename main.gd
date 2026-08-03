@@ -1,6 +1,6 @@
 extends Node2D
 
-const DASHED_LINE_SHADER := preload("res://shaders/dashed_line.gdshader")
+# const DASHED_LINE_SHADER := preload("res://shaders/dashed_line.gdshader")
 
 @onready var path_arrow: RigidBody2D = $PathArrow
 @onready var trackline: Line2D = $Line2D
@@ -20,10 +20,6 @@ var _current_map: Node2D = null
 var _trackline_index: int = -1
 
 func _ready() -> void:
-	# Apply animated dashed line shader to the trackline
-	var dash_material := ShaderMaterial.new()
-	dash_material.shader = DASHED_LINE_SHADER
-	trackline.material = dash_material
 
 	# Hide the info bubble initially
 	info_bubble.visible = false
