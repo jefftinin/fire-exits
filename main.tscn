@@ -6,7 +6,7 @@
 [ext_resource type="Texture2D" uid="uid://c0pd8pbnhynwj" path="res://icon.svg" id="4_1bvp3"]
 [ext_resource type="Script" uid="uid://bnxoev3el0o5o" path="res://path_arrow.gd" id="5_lquwl"]
 [ext_resource type="Shader" uid="uid://b0mkouthqsqbv" path="res://main.gdshader" id="6_7mycd"]
-[ext_resource type="Texture2D" uid="uid://bnwbkmqgn60qh" path="res://assets/icons8-place-marker-96.png" id="7_272bh"]
+[ext_resource type="Texture2D" uid="uid://b4jya4hqlhc8h" path="res://assets/icons8-map-pin-100.png" id="7_272bh"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_vtma8"]
 radius = 23.086792
@@ -87,15 +87,15 @@ mouse_filter = 2
 texture = ExtResource("7_272bh")
 
 [node name="Text2" type="PanelContainer" parent="Marker" unique_id=1207350220]
+modulate = Color(1, 0, 0, 1)
 layout_mode = 0
 offset_left = -52.0
-offset_top = -126.0
+offset_top = -135.0
 offset_right = 52.0
-offset_bottom = -86.0
+offset_bottom = -95.0
 mouse_filter = 2
 
 [node name="You are here" type="Label" parent="Marker/Text2" unique_id=1425355296]
-modulate = Color(0, 0, 0, 1)
 layout_mode = 2
 text = "You are here!"
 horizontal_alignment = 1

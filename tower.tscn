@@ -161,6 +161,9 @@ position = Vector2(443.64566, 922.8398)
 [node name="Door30" type="Node2D" parent="Doors" unique_id=1073362593 groups=["Doors"]]
 position = Vector2(305.76547, 921.9709)
 
+[node name="Door31" type="Node2D" parent="Doors" unique_id=1632192037 groups=["Doors"]]
+position = Vector2(1556, 805)
+
 [node name="Rooms" type="Node2D" parent="." unique_id=1491743838]
 
 [node name="Transformer Room" type="Node2D" parent="Rooms" unique_id=73038471]
@@ -210,3 +213,21 @@ position = Vector2(2637.7107, 1008.1322)
 
 [node name="Stock Room2" type="Node2D" parent="Rooms" unique_id=1916423993]
 position = Vector2(2392.6528, 1011.7356)
+
+[node name="Locker Room 1" type="Node2D" parent="Rooms" unique_id=1183195204]
+position = Vector2(2163.9292, 742.9798)
+
+[node name="Locker Room 2" type="Node2D" parent="Rooms" unique_id=567810568]
+position = Vector2(2019.8293, 748.4798)
+
+[node name="Male Comfort Room" type="Node2D" parent="Rooms" unique_id=1145901832]
+position = Vector2(2277.4, 1010.06537)
+
+[node name="Male Comfort Room 2" type="Node2D" parent="Rooms" unique_id=207494138]
+position = Vector2(751, 1011)
+
+[node name="Ladies Comfort Room" type="Node2D" parent="Rooms" unique_id=633685276]
+position = Vector2(2152, 1014.4654)
+
+[node name="Ladies Comfort Room 2" type="Node2D" parent="Rooms" unique_id=973594019]
+position = Vector2(635.47046, 1010.3963)
