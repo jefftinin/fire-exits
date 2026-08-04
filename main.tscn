@@ -52,6 +52,7 @@ max_visible_rows = 6
 visible = false
 script = ExtResource("5_lquwl")
 speed = 900.0
+min_point_distance = 15.0
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="PathArrow" unique_id=2078867091]
 visible = false

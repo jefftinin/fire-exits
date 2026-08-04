@@ -9,6 +9,11 @@ extends CharacterBody2D
 ## Speed multiplier used by the invisible probe run that measures the path
 ## extents before the visible arrow animates. Higher = snappier fit.
 @export var probe_speed_multiplier: float = 32.0
+## Distance from an exit's aim point that counts as "approached" while seeking
+## the exit. Passing within this radius advances to the assembly phase, so the
+## arrow doesn't detour to touch the exit center exactly when the assembly
+## area lies near or past the exit.
+@export var exit_approach_radius: float = 32.0
 
 ## Emitted once when the invisible probe run reaches the assembly point,
 ## carrying the world-space bounds of the entire traveled path. The camera
@@ -193,8 +198,16 @@ func _seek(candidates: Array[Node]) -> bool:
 	var aim := _center(target)
 	if nav.target_position != aim:
 		nav.target_position = aim
-	# Axis-aligned arrival beats is_navigation_finished(), which can fire early
-	# on transition frames before the agent recomputes its path.
+	# Exit approach is proximity-based: passing within exit_approach_radius of
+	# the aim counts as reached, so we don't overshoot past the opening just to
+	# nail the exact center when the assembly area lies near the exit.
+	if _nav_state == NavState.SEEKING_EXIT:
+		if global_position.distance_squared_to(aim) <= exit_approach_radius * exit_approach_radius:
+			return true
+	# Assembly still needs the strict axis-aligned landing so the path ends
+	# cleanly at the assembly point. Axis-aligned arrival beats
+	# is_navigation_finished(), which can fire early on transition frames
+	# before the agent recomputes its path.
 	var d := global_position - aim
 	if absf(d.x) <= ALIGN_TOL and absf(d.y) <= ALIGN_TOL:
 		return true

@@ -30,14 +30,11 @@ func _ready():
 
 func _on_input_event(viewport: Viewport, event: InputEvent, _shape_idx: int) -> void:
 	# Mouse click handling
+	# On mobile web (emulate_mouse_from_touch=true) a single tap arrives as a
+	# synthesized mouse button event, so this branch fires room_clicked directly
+	# — no DisplayServer touch checks (unreliable on HTML5). Desktop mouse is
+	# handled identically.
 	if event is InputEventMouseButton:
-		# On a real touch device (emulate_mouse_from_touch=true) every touch
-		# also arrives as a synthesized mouse button event. The touch branch
-		# below handles those, so skip the synthesized mouse branch here to
-		# avoid room_clicked firing twice. Desktop mouse (no touchscreen)
-		# is handled directly below.
-		if Input.is_emulating_mouse_from_touch() and DisplayServer.is_touchscreen_available():
-			return
 		var mb := event as InputEventMouseButton
 		if mb.button_index == MOUSE_BUTTON_LEFT:
 			if mb.pressed:
@@ -58,8 +55,11 @@ func _on_input_event(viewport: Viewport, event: InputEvent, _shape_idx: int) -> 
 				_touching = true
 				modulate = Color(1.2, 1.2, 1.2, 1.0)
 		else:
-			# Only emit click if touch didn't move significantly (not a drag/swipe)
-			if st.position.distance_to(_press_position) <= CLICK_THRESHOLD:
+			# Only emit click if touch didn't move significantly (not a drag/swipe).
+			# When emulate_mouse_from_touch is on, the synthesized mouse click
+			# above already emitted room_clicked — skip to avoid double-firing.
+			if st.position.distance_to(_press_position) <= CLICK_THRESHOLD \
+				and not Input.is_emulating_mouse_from_touch():
 				emit_signal("room_clicked", self, st.position)
 				viewport.set_input_as_handled()
 			# Remove highlight on touch release

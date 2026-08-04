@@ -92,13 +92,48 @@ var _target_zoom: float = 1.0
 ## where the viewport is larger than the limits rect.
 @export var limit_zoom_to_limits: bool = false
 
+## When true (default), programmatic fits (`fit_rect`, and therefore every new
+## path point, navigation, and map-load fit) glide the camera position toward
+## the new center instead of snapping. User gestures (pan/pinch/wheel/zoom
+## buttons/slider) immediately cancel this interpolation and take control.
+## When false, fits snap instantly (the original behavior).
+@export var smooth_position_fit: bool = true
+
+## Speed of the position glide when `smooth_position_fit` is on. Matches the
+## zoom lerp feel (higher = snappier).
+@export var position_smoothness: float = 8.0
+
 ## World-space rect the camera is clamped inside while limits_enabled is true.
 var _limits_rect: Rect2 = Rect2()
 
+# --- Position interpolation state ---
+## Target world position the camera glides toward while interpolation is
+## armed. Updated by `fit_rect`; cleared on any user gesture takeover.
+var _target_position: Vector2 = Vector2.ZERO
+## True while the camera is gliding toward `_target_position`. Disabled the
+## moment the user pans/zooms, re-armed on the next `fit_rect`.
+var _position_interp_active: bool = false
+
 func _process(delta: float) -> void:
 	zoom = zoom.lerp(Vector2(_target_zoom, _target_zoom), zoom_smoothness * delta)
+	_process_glide(delta)
 	_process_fling(delta)
 	_apply_limits()
+
+## Glides the camera position toward `_target_position` when armed. Stops once
+## essentially there (keeps tiny floating-point jitter from running forever).
+func _process_glide(delta: float) -> void:
+	if not _position_interp_active:
+		return
+	position = position.lerp(_target_position, position_smoothness * delta)
+	if position.distance_to(_target_position) < 0.01:
+		position = _target_position
+		_position_interp_active = false
+
+## Disarms position interpolation (user gesture takeover). The camera snaps to
+## full user control; the next `fit_rect` re-arms the glide.
+func _cancel_interp() -> void:
+	_position_interp_active = false
 
 # --- Zoom API ---------------------------------------------------------------
 
@@ -107,12 +142,15 @@ func _set_target_zoom(value: float) -> void:
 	zoom_changed.emit(_target_zoom)
 
 func zoom_in() -> void:
+	_cancel_interp()
 	_set_target_zoom(_target_zoom + zoom_step)
 
 func zoom_out() -> void:
+	_cancel_interp()
 	_set_target_zoom(_target_zoom - zoom_step)
 
 func zoom_to(value: float) -> void:
+	_cancel_interp()
 	_set_target_zoom(value)
 
 func get_zoom_value() -> float:
@@ -132,6 +170,7 @@ func get_zoom_max() -> float:
 ## discrete wheel ticks and pinch steps correct position by the full target
 ## delta without compounding errors from the smoothing lerp.
 func _zoom_to_focal(screen_pos: Vector2, new_target_zoom: float) -> void:
+	_cancel_interp()
 	var viewport_size := get_viewport_rect().size
 	if viewport_size.x <= 0.0 or viewport_size.y <= 0.0:
 		_set_target_zoom(new_target_zoom)
@@ -312,13 +351,45 @@ func _apply_limits() -> void:
 		clamped_pos.y = clampf(position.y, min_y, max_y)
 	position = clamped_pos
 
+## Arms the position glide toward `target_pos` when `smooth_position_fit` is
+## on (default), otherwise snaps immediately. Shared by all fit helpers so they
+## all honor the same smoothing toggle.
+func _arm_fit(target_pos: Vector2) -> void:
+	if smooth_position_fit:
+		_target_position = target_pos
+		_position_interp_active = true
+	else:
+		_cancel_interp()
+		position = target_pos
+
 func fit_rect(world_rect: Rect2) -> void:
 	var viewport_size := get_viewport_rect().size
 	if viewport_size.x <= 0.0 or viewport_size.y <= 0.0 or world_rect.size.x <= 0.0 or world_rect.size.y <= 0.0:
 		return
 	var fit_zoom: float = minf(viewport_size.x / world_rect.size.x, viewport_size.y / world_rect.size.y)
 	_set_target_zoom(fit_zoom * fit_zoom_scale)
-	position = world_rect.get_center()
+	_arm_fit(world_rect.get_center())
+	_apply_limits()
+
+## Fits the camera to `world_rect` while reserving `right_screen_margin` px of
+## empty screen space along the right edge (e.g. for the zoom/UI panel). The
+## zoom is computed so the rect fits within the viewport width minus the margin,
+## and the camera shifts right so the rect's horizontal center lands in the
+## center of the left "usable" region. Margin is in screen pixels.
+func fit_rect_with_right_margin(world_rect: Rect2, right_screen_margin: float) -> void:
+	var viewport_size := get_viewport_rect().size
+	if viewport_size.x <= 0.0 or viewport_size.y <= 0.0 or world_rect.size.x <= 0.0 or world_rect.size.y <= 0.0:
+		return
+	var right_margin := maxf(right_screen_margin, 0.0)
+	var usable_width := maxf(viewport_size.x - right_margin, 1.0)
+	var target_zoom: float = minf(usable_width / world_rect.size.x, viewport_size.y / world_rect.size.y) * fit_zoom_scale
+	_set_target_zoom(target_zoom)
+	# Shift the fit center right so the rect sits toward the left of the viewport,
+	# reserving the right margin: the rect's horizontal center should land on
+	# screen at usable_width/2 (i.e. `right_margin/2` from the left edge).
+	var center := world_rect.get_center()
+	center.x += right_margin / (2.0 * target_zoom)
+	_arm_fit(center)
 	_apply_limits()
 
 # --- Input control -----------------------------------------------------------
@@ -356,17 +427,19 @@ func _unhandled_input(event: InputEvent) -> void:
 
 	# --- Mouse (desktop) Controls ---
 	if event is InputEventMouseButton:
-		# On a real touch device (emulate_mouse_from_touch=true) every touch
-		# also arrives as a synthesized mouse button event. The touch branch
-		# below handles those, so skip the synthesized mouse branch here.
-		# On desktop (no touchscreen) the mouse branch handles the drag
-		# directly. Wheel zoom always passes since it's never emulated.
-		if Input.is_emulating_mouse_from_touch() and DisplayServer.is_touchscreen_available() \
+		# On a touch device (emulate_mouse_from_touch=true) every touch also
+		# arrives as a synthesized mouse button event. The touch branch below
+		# handles those, so skip the synthesized mouse branch here. Desktop
+		# mouse (no touchscreen) is handled directly. Wheel zoom always passes
+		# since it's never emulated. No DisplayServer touch checks here — they
+		# are unreliable on HTML5/mobile web.
+		if Input.is_emulating_mouse_from_touch() \
 			and not _is_wheel(event as InputEventMouseButton):
 			return
 		var mb := event as InputEventMouseButton
 		if mb.button_index == MOUSE_BUTTON_LEFT:
 			if mb.pressed:
+				_cancel_interp()
 				_dragging = true
 				_last_mouse_position = mb.position
 				_clear_fling()
@@ -374,21 +447,25 @@ func _unhandled_input(event: InputEvent) -> void:
 				_dragging = false
 		# Wheel zoom: anchored to the cursor when the toggle is enabled,
 		# otherwise the classic center-anchored zoom around the screen center.
+		# Center-anchored wheel zoom cancels interpolation so the user's zoom
+		# isn't fought by an in-flight glide.
 		if mb.button_index == MOUSE_BUTTON_WHEEL_UP:
 			if wheel_zoom_to_cursor:
 				_zoom_to_focal(mb.position, _target_zoom + zoom_step)
 			else:
+				_cancel_interp()
 				_set_target_zoom(_target_zoom + zoom_step)
 		elif mb.button_index == MOUSE_BUTTON_WHEEL_DOWN:
 			if wheel_zoom_to_cursor:
 				_zoom_to_focal(mb.position, _target_zoom - zoom_step)
 			else:
+				_cancel_interp()
 				_set_target_zoom(_target_zoom - zoom_step)
 	elif event is InputEventMouseMotion and _dragging:
-		# Same de-duplication: synthesized mouse motion on a real touch
-		# device is also emitted as a touch drag, so the touch branch handles
-		# the pan. Desktop mouse never hits this guard.
-		if Input.is_emulating_mouse_from_touch() and DisplayServer.is_touchscreen_available():
+		# Same de-duplication: synthesized mouse motion on a touch device is
+		# also emitted as a touch drag, so the touch branch handles the pan.
+		# Desktop mouse never hits this guard.
+		if Input.is_emulating_mouse_from_touch():
 			return
 		get_viewport().set_input_as_handled()
 		var mm := event as InputEventMouseMotion
@@ -409,6 +486,7 @@ func _handle_screen_touch(st: InputEventScreenTouch) -> void:
 		_tracked_touches[st.index] = st.position
 		match _gesture_mode:
 			GestureMode.NONE:
+				_cancel_interp()
 				_gesture_mode = GestureMode.PAN
 				_pan_anchor = st.position
 				_pan_velocity = Vector2.ZERO
@@ -468,6 +546,7 @@ func _begin_pinch() -> void:
 	var keys := _tracked_touches.keys()
 	if keys.size() < 2:
 		return
+	_cancel_interp()
 	_touch_a = keys[0]
 	_touch_b = keys[1]
 	_last_pinch_distance = _tracked_touches[_touch_a].distance_to(_tracked_touches[_touch_b])

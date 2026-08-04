@@ -13,6 +13,12 @@ extends Node2D
 ## camera. Larger values zoom out further so more of the map/path is shown.
 @export var path_fit_padding: float = 160.0
 
+## Right-edge screen margin (px) reserved when the camera fits the probe route
+## extents (start → end points). The route's horizontal center lands in the
+## center of the viewport width minus this margin, keeping the path clear of
+## the right-side UI (e.g. the zoom controls panel).
+@export var route_fit_right_margin: float = 250.0
+
 
 ## Map name → scene path. Scenes are loaded lazily on first use so the web
 ## export only downloads the active map, not all of them at startup.
@@ -167,11 +173,12 @@ func _stop_breathing() -> void:
 		_marker_breath_tween = null
 
 ## Called when the invisible probe finishes measuring the route. Zooms the
-## camera out to the traveled path's full extents, then re-shows the arrow and
-## track and launches the visible animated run (which drops its own low-density
-## turn points and swaps them in on completion).
+## camera out to the traveled path's full extents (reserving the right-screen
+## margin so the start/end points clear the right-side UI), then re-shows the
+## arrow and track and launches the visible animated run (which drops its own
+## low-density turn points and swaps them in on completion).
 func _on_probe_completed(bounds: Rect2) -> void:
-	camera.fit_rect(bounds.grow(path_fit_padding))
+	camera.fit_rect_with_right_margin(bounds.grow(path_fit_padding), route_fit_right_margin)
 	path_arrow.end_probe()
 	path_arrow.teleport_to(marker.global_position)
 	path_arrow.visible = true

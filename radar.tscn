@@ -154,7 +154,7 @@ position = Vector2(2308, 1308)
 position = Vector2(1312, 496)
 
 [node name="Exit10" type="Node2D" parent="Exits" unique_id=234386581 groups=["Exits"]]
-position = Vector2(1976, 236)
+position = Vector2(1940, 236)
 
 [node name="Exit11" type="Node2D" parent="Exits" unique_id=577140131 groups=["Exits"]]
 position = Vector2(1193.1816, 495.45456)
