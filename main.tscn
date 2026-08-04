@@ -39,6 +39,8 @@ limit_smoothed = true
 script = ExtResource("2_h2yge")
 zoom_min = 0.3
 fit_zoom_scale = 0.9
+double_tap_zoom_in_factor = 1.0
+double_tap_zoom_out_factor = 0.5
 
 [node name="UILayer" parent="." unique_id=365944592 instance=ExtResource("3_272bh")]
 max_visible_rows = 6

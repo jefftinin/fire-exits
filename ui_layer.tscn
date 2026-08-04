@@ -187,7 +187,7 @@ offset_bottom = -44.0
 grow_horizontal = 2
 grow_vertical = 2
 bbcode_enabled = true
-text = "[center][font_size=24][b]About Fire Exits[/b][/font_size][/center]
+text = "[center][font_size=24][b]MFCNS Fire Evacuation Project[/b][/font_size][/center]
 
 [center][table=3]
 [cell][img=140]res://assets/about/caap.png[/img][/cell]
