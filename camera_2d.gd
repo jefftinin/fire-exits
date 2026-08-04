@@ -1,5 +1,10 @@
 extends Camera2D
 
+## Emitted whenever the target zoom changes (wheel, pinch, buttons, slider,
+## or fit). The UI layer listens to keep the zoom slider/label in sync when
+## the user zooms via scroll or pinch.
+signal zoom_changed(value: float)
+
 var _dragging: bool = false
 var _last_mouse_position: Vector2 = Vector2.ZERO
 var _target_zoom: float = 1.0
@@ -22,14 +27,18 @@ var _last_pinch_distance: float = 0.0
 func _process(delta: float) -> void:
 	zoom = zoom.lerp(Vector2(_target_zoom, _target_zoom), zoom_smoothness * delta)
 
+func _set_target_zoom(value: float) -> void:
+	_target_zoom = clampf(value, zoom_min, zoom_max)
+	zoom_changed.emit(_target_zoom)
+
 func zoom_in() -> void:
-	_target_zoom = clampf(_target_zoom + zoom_step, zoom_min, zoom_max)
+	_set_target_zoom(_target_zoom + zoom_step)
 
 func zoom_out() -> void:
-	_target_zoom = clampf(_target_zoom - zoom_step, zoom_min, zoom_max)
+	_set_target_zoom(_target_zoom - zoom_step)
 
 func zoom_to(value: float) -> void:
-	_target_zoom = clampf(value, zoom_min, zoom_max)
+	_set_target_zoom(value)
 
 func get_zoom_value() -> float:
 	return _target_zoom
@@ -62,7 +71,7 @@ func fit_rect(world_rect: Rect2) -> void:
 	if viewport_size.x <= 0.0 or viewport_size.y <= 0.0 or world_rect.size.x <= 0.0 or world_rect.size.y <= 0.0:
 		return
 	var fit_zoom: float = minf(viewport_size.x / world_rect.size.x, viewport_size.y / world_rect.size.y)
-	_target_zoom = clampf(fit_zoom * fit_zoom_scale, zoom_min, zoom_max)
+	_set_target_zoom(fit_zoom * fit_zoom_scale)
 	position = world_rect.get_center()
 
 ## Enables or disables the camera's own input handling (pan/zoom). The UI
@@ -73,11 +82,24 @@ func set_input_enabled(enabled: bool) -> void:
 		_dragging = false
 		_active_touches.clear()
 
+## True when the given mouse button event is a wheel button (never emulated
+## as a touch, so it must be processed directly rather than via the touch
+## branch).
+func _is_wheel(mb: InputEventMouseButton) -> bool:
+	return mb.button_index == MOUSE_BUTTON_WHEEL_UP or mb.button_index == MOUSE_BUTTON_WHEEL_DOWN
+
 func _unhandled_input(event: InputEvent) -> void:
 	if not _input_enabled:
 		return
 	# Mouse Controls
 	if event is InputEventMouseButton:
+		# On touch devices (emulate_mouse_from_touch=true) every real touch
+		# also arrives as a synthesized mouse button event. The touch branch
+		# below handles those, so skip the synthesized mouse branch here.
+		# Real mouse on desktop is handled directly; wheel zoom always passes
+		# since wheel is never emulated as a touch.
+		if Input.is_emulating_mouse_from_touch() and not _is_wheel(event as InputEventMouseButton):
+			return
 		var mb := event as InputEventMouseButton
 		if mb.button_index == MOUSE_BUTTON_LEFT:
 			if mb.pressed:
@@ -86,10 +108,14 @@ func _unhandled_input(event: InputEvent) -> void:
 			else:
 				_dragging = false
 		if mb.button_index == MOUSE_BUTTON_WHEEL_UP:
-			_target_zoom = clampf(_target_zoom + zoom_step, zoom_min, zoom_max)
+			_set_target_zoom(_target_zoom + zoom_step)
 		elif mb.button_index == MOUSE_BUTTON_WHEEL_DOWN:
-			_target_zoom = clampf(_target_zoom - zoom_step, zoom_min, zoom_max)
+			_set_target_zoom(_target_zoom - zoom_step)
 	elif event is InputEventMouseMotion and _dragging:
+		# Same de-duplication: synthesized mouse motion on touch devices is
+		# also emitted as a touch drag, so the touch branch handles the pan.
+		if Input.is_emulating_mouse_from_touch():
+			return
 		get_viewport().set_input_as_handled()
 		var mm := event as InputEventMouseMotion
 		var delta: Vector2 = (mm.position - _last_mouse_position) * drag_sensitivity / zoom
@@ -126,7 +152,7 @@ func _unhandled_input(event: InputEvent) -> void:
 				var pinch_delta: float = current_distance - _last_pinch_distance
 				# Sensitivity multiplier for pinch zoom
 				var zoom_change: float = pinch_delta * 0.005 
-				_target_zoom = clampf(_target_zoom + zoom_change, zoom_min, zoom_max)
+				_set_target_zoom(_target_zoom + zoom_change)
 				
 			_last_pinch_distance = current_distance
 			

@@ -166,15 +166,12 @@ func _relayout() -> void:
 	zoom_controls.position = Vector2(zoom_left, zoom_top)
 	zoom_controls.size = Vector2(44.0, zoom_height)
 
-	# --- Search bar (bottom-center) ---
+	# --- Search bar (top, right of the map list) ---
 	var search_w: float = minf(search_max_width, w - safe_left - safe_right - 2.0 * screen_margin)
 	var search_h: float = 40.0
-	# Lay search above bottom safe area so notches/docks don't cover it
-	var search_y: float = h - safe_bottom - screen_margin - search_h
-	search_panel.get_parent().position = Vector2(
-		(w - search_w) * 0.5,
-		search_y
-	)
+	var search_x: float = map_list.position.x + map_list.size.x + screen_margin
+	var search_y: float = safe_top + screen_margin
+	search_panel.get_parent().position = Vector2(search_x, search_y)
 	search_panel.get_parent().size = Vector2(search_w, search_h)
 
 	# Reclamp suggestion list if it is currently visible
@@ -308,23 +305,24 @@ func _on_search_text_changed(new_text: String) -> void:
 	_update_list_geometry()
 	suggestions_list.visible = true
 
-## Positions the suggestion list directly above the search input and sizes it
+## Positions the suggestion list directly below the search input and sizes it
 ## to fit the number of returned rows (capped to keep it on screen).
 func _update_list_geometry() -> void:
 	var panel := suggestions_list.get_parent() as Control
 	if panel == null:
 		return
 
-	# SearchInput's top edge in the panel's local coordinate space
-	var input_top := search_input.position.y
+	# SearchInput's bottom edge in the panel's local coordinate space
+	var input_bottom := search_input.position.y + search_input.size.y
 
 	var row_count := mini(_matches.size(), max_visible_rows)
 	var list_height: float = maxf(35.0, row_count * row_height)
-	# Cap so the list doesn't run off the top of the screen
+	# Cap so the list doesn't run off the bottom of the screen
 	var search_ui: Control = search_panel.get_parent() as Control
-	var search_ui_top: float = search_ui.global_position.y
-	var max_above: float = maxf(0.0, search_ui_top - _safe_area["top"] - 4.0)
-	list_height = minf(list_height, max_above)
+	var search_ui_bottom: float = search_ui.global_position.y + search_ui.size.y
+	var viewport_h: float = _viewport_size().y
+	var max_below: float = maxf(0.0, viewport_h - _safe_area["bottom"] - 4.0 - search_ui_bottom)
+	list_height = minf(list_height, max_below)
 	if list_height < 35.0:
 		list_height = 35.0
 
@@ -334,8 +332,8 @@ func _update_list_geometry() -> void:
 		half_width = search_panel.size.x * 0.5
 	suggestions_list.set_anchor_and_offset(SIDE_LEFT, 0.5, -half_width)
 	suggestions_list.set_anchor_and_offset(SIDE_RIGHT, 0.5, half_width)
-	suggestions_list.set_anchor_and_offset(SIDE_TOP, 0.0, input_top - list_height - list_bottom_gap)
-	suggestions_list.set_anchor_and_offset(SIDE_BOTTOM, 0.0, input_top - list_bottom_gap)
+	suggestions_list.set_anchor_and_offset(SIDE_TOP, 0.0, input_bottom + list_bottom_gap)
+	suggestions_list.set_anchor_and_offset(SIDE_BOTTOM, 0.0, input_bottom + list_bottom_gap + list_height)
 
 func _on_suggestion_activated(index: int) -> void:
 	if index < 0 or index >= _matches.size():
@@ -357,8 +355,20 @@ func _init_zoom_controls() -> void:
 	zoom_in_button.pressed.connect(_on_zoom_in_pressed)
 	zoom_out_button.pressed.connect(_on_zoom_out_pressed)
 	zoom_slider.value_changed.connect(_on_zoom_slider_changed)
+	_camera.zoom_changed.connect(_on_zoom_changed)
 
 	# Update label
+	_update_zoom_label()
+
+## Called whenever the camera's target zoom changes from any source
+## (scroll wheel, pinch, zoom buttons, fit-to-map). Keeps the slider and
+## label in sync with the live zoom level.
+func _on_zoom_changed(value: float) -> void:
+	if _updating_slider:
+		return
+	_updating_slider = true
+	zoom_slider.value = value
+	_updating_slider = false
 	_update_zoom_label()
 
 func _on_zoom_slider_changed(value: float) -> void:
