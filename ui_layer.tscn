@@ -135,6 +135,7 @@ texture = ExtResource("1_pxq32")
 layout_mode = 2
 mouse_filter = 1
 theme_override_colors/default_color = Color(0, 0, 0, 1)
+theme_override_colors/font_outline_color = Color(1, 1, 1, 1)
 bbcode_enabled = true
 text = "Civil Aviation of the Philippines
 [font_size=11]Manila Control Tower Complex[/font_size]

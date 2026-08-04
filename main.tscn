@@ -121,9 +121,9 @@ mouse_filter = 2
 
 [node name="MarkerSprite" type="TextureRect" parent="ExitPanel" unique_id=754330500]
 layout_mode = 0
-offset_left = -22.0
+offset_left = -21.0
 offset_top = -22.0
-offset_right = 22.0
+offset_right = 23.0
 offset_bottom = 22.0
 mouse_filter = 2
 texture = ExtResource("8_5vw27")

@@ -84,6 +84,14 @@ var _target_zoom: float = 1.0
 ## without touching the map sprite.
 @export var manual_limits_rect: Rect2 = Rect2()
 
+## When true, zooming out cannot exceed the limits rect: the camera's minimum
+## zoom becomes the largest zoom that still fits the viewport entirely inside
+## the limits on both axes. At that minimum the camera is pinned to center
+## (no slack to pan). When false (default), the camera can zoom out all the
+## way to `zoom_min` and empty space shows past the map edges on any axis
+## where the viewport is larger than the limits rect.
+@export var limit_zoom_to_limits: bool = false
+
 ## World-space rect the camera is clamped inside while limits_enabled is true.
 var _limits_rect: Rect2 = Rect2()
 
@@ -254,6 +262,19 @@ func _get_effective_limits_rect() -> Rect2:
 		effective.size + limits_margin * 2.0
 	)
 
+## Returns the smallest zoom at which the viewport still fits entirely inside
+## `rect` on both axes. Used when `limit_zoom_to_limits` is enabled so the
+## camera can never zoom out past the limits (which would otherwise reveal
+## empty space around the map edges). Falls back to `zoom_min` on degenerate
+## sizes.
+func _get_limits_min_zoom(rect: Rect2) -> float:
+	var viewport_size := get_viewport_rect().size
+	if viewport_size.x <= 0.0 or viewport_size.y <= 0.0:
+		return zoom_min
+	if rect.size.x <= 0.0 or rect.size.y <= 0.0:
+		return zoom_min
+	return maxf(viewport_size.x / rect.size.x, viewport_size.y / rect.size.y)
+
 ## Clamps `position` so the camera's visible viewport stays within the limits
 ## rect. If the viewport is larger than the limits rect on an axis, that axis
 ## is centered on the rect (so the camera can't show empty space past the map
@@ -267,6 +288,11 @@ func _apply_limits() -> void:
 	var effective_rect := _get_effective_limits_rect()
 	if effective_rect.size.x <= 0.0 or effective_rect.size.y <= 0.0:
 		return
+	# When the toggle is on, keep the target zoom from going further out than
+	# the viewport fitting inside the limits. `_set_target_zoom` fires the
+	# `zoom_changed` signal so the UI slider/label stay in sync automatically.
+	if limit_zoom_to_limits and _target_zoom < _get_limits_min_zoom(effective_rect):
+		_set_target_zoom(_get_limits_min_zoom(effective_rect))
 	var half := viewport_size * 0.5 / zoom
 	var clamped_pos := position
 	# Horizontal clamp

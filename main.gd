@@ -27,8 +27,6 @@ var _map_scenes_loaded: Dictionary = {}
 
 var _current_map: Node2D = null
 var _trackline_index: int = -1
-var _camera_fit_rect: Rect2 = Rect2()
-var _camera_fit_active: bool = false
 var _marker_tween: Tween = null
 var _marker_breath_tween: Tween = null
 var _exit_tween: Tween = null
@@ -46,8 +44,9 @@ func _ready() -> void:
 	_stop_breathing()
 	_hide_exit_panel()
 
-	# Track drawn path points so the camera can keep the whole path in view
-	path_arrow.path_point_added.connect(_on_path_point_added)
+	# Zoom out to the full route extents (from the invisible probe) before the
+	# visible arrow animates, and show the exit panel when the arrow arrives.
+	path_arrow.probe_completed.connect(_on_probe_completed)
 	path_arrow.path_completed.connect(_on_path_completed)
 
 	# Navigate to a searched room when a suggestion is selected
@@ -123,23 +122,18 @@ func _on_room_clicked(room: Room, click_position: Vector2) -> void:
 
 ## Navigates the marker/path arrow to a global world position and fits the
 ## camera to the resulting path. Used by both room clicks and search results.
+## The route is first measured by an invisible probe so the camera can zoom
+## out to the full extents before the visible arrow animates.
 func navigate_to(global_pos: Vector2) -> void:
 	# Marker sprite center is at marker origin, so position directly at point
 	marker.global_position = global_pos
 	_play_marker_pop()
 	_hide_exit_panel()
-	path_arrow.teleport_to(global_pos)
-	path_arrow.visible = true
-	trackline.visible = true
-	
-	# Reset the camera-fit bounds to the start point, then expand to include
-	# the assembly target. As the arrow draws its path, added points are also
-	# included so the entire visible path stays on screen.
-	_camera_fit_rect = Rect2(global_pos, Vector2.ZERO)
-	_camera_fit_active = true
-	var assembly_pos: Vector2 = path_arrow.get_assembly_target_position()
-	_camera_fit_rect = _camera_fit_rect.expand(assembly_pos)
-	_apply_camera_fit()
+	# Keep the arrow/track hidden while the probe measures the route; they are
+	# re-shown once the camera has fit the full path (in _on_probe_completed).
+	path_arrow.visible = false
+	trackline.visible = false
+	path_arrow.start_probe(global_pos)
 
 ## Pops the marker in with a bouncy scale-up from the pin tip, then starts
 ## the idle breathing loop.
@@ -172,24 +166,20 @@ func _stop_breathing() -> void:
 		_marker_breath_tween.kill()
 		_marker_breath_tween = null
 
-## Fits the camera to the accumulated path bounds if tracking is active.
-func _apply_camera_fit() -> void:
-	if not _camera_fit_active:
-		return
-	camera.fit_rect(_camera_fit_rect.grow(path_fit_padding))
+## Called when the invisible probe finishes measuring the route. Zooms the
+## camera out to the traveled path's full extents, then re-shows the arrow and
+## track and launches the visible animated run (which drops its own low-density
+## turn points and swaps them in on completion).
+func _on_probe_completed(bounds: Rect2) -> void:
+	camera.fit_rect(bounds.grow(path_fit_padding))
+	path_arrow.end_probe()
+	path_arrow.teleport_to(marker.global_position)
+	path_arrow.visible = true
+	trackline.visible = true
 
-## Called whenever the arrow records a new path point; expands the camera
-## bounds so the growing path remains visible.
-func _on_path_point_added(point: Vector2) -> void:
-	if not _camera_fit_active:
-		return
-	_camera_fit_rect = _camera_fit_rect.expand(point)
-	_apply_camera_fit()
-
-## Called when the arrow reaches the assembly point; stops further refits and
-## shows the EXIT destination panel over the final resting spot.
+## Called when the arrow reaches the assembly point; shows the EXIT destination
+## panel over the final resting spot.
 func _on_path_completed() -> void:
-	_camera_fit_active = false
 	_show_exit_panel(path_arrow.global_position)
 
 func _on_map_selected(index: int) -> void:
