@@ -93,12 +93,13 @@ func _unhandled_input(event: InputEvent) -> void:
 		return
 	# Mouse Controls
 	if event is InputEventMouseButton:
-		# On touch devices (emulate_mouse_from_touch=true) every real touch
+		# On a real touch device (emulate_mouse_from_touch=true) every touch
 		# also arrives as a synthesized mouse button event. The touch branch
 		# below handles those, so skip the synthesized mouse branch here.
-		# Real mouse on desktop is handled directly; wheel zoom always passes
-		# since wheel is never emulated as a touch.
-		if Input.is_emulating_mouse_from_touch() and not _is_wheel(event as InputEventMouseButton):
+		# On desktop (no touchscreen) the mouse branch handles the drag
+		# directly. Wheel zoom always passes since it's never emulated.
+		if Input.is_emulating_mouse_from_touch() and DisplayServer.is_touchscreen_available() \
+			and not _is_wheel(event as InputEventMouseButton):
 			return
 		var mb := event as InputEventMouseButton
 		if mb.button_index == MOUSE_BUTTON_LEFT:
@@ -112,9 +113,10 @@ func _unhandled_input(event: InputEvent) -> void:
 		elif mb.button_index == MOUSE_BUTTON_WHEEL_DOWN:
 			_set_target_zoom(_target_zoom - zoom_step)
 	elif event is InputEventMouseMotion and _dragging:
-		# Same de-duplication: synthesized mouse motion on touch devices is
-		# also emitted as a touch drag, so the touch branch handles the pan.
-		if Input.is_emulating_mouse_from_touch():
+		# Same de-duplication: synthesized mouse motion on a real touch
+		# device is also emitted as a touch drag, so the touch branch handles
+		# the pan. Desktop mouse never hits this guard.
+		if Input.is_emulating_mouse_from_touch() and DisplayServer.is_touchscreen_available():
 			return
 		get_viewport().set_input_as_handled()
 		var mm := event as InputEventMouseMotion

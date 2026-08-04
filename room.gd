@@ -31,12 +31,12 @@ func _ready():
 func _on_input_event(viewport: Viewport, event: InputEvent, _shape_idx: int) -> void:
 	# Mouse click handling
 	if event is InputEventMouseButton:
-		# On touch devices (emulate_mouse_from_touch=true) every real touch
+		# On a real touch device (emulate_mouse_from_touch=true) every touch
 		# also arrives as a synthesized mouse button event. The touch branch
 		# below handles those, so skip the synthesized mouse branch here to
-		# avoid room_clicked firing twice. Real mouse on desktop is handled
-		# directly.
-		if Input.is_emulating_mouse_from_touch():
+		# avoid room_clicked firing twice. Desktop mouse (no touchscreen)
+		# is handled directly below.
+		if Input.is_emulating_mouse_from_touch() and DisplayServer.is_touchscreen_available():
 			return
 		var mb := event as InputEventMouseButton
 		if mb.button_index == MOUSE_BUTTON_LEFT:
