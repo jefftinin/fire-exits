@@ -316,10 +316,14 @@ func _load_map(map_name: String) -> void:
 	# Populate the search input with searchable room entries from this map
 	ui_layer.set_rooms(_gather_rooms(_current_map))
 	
-	# Zoom out to fit the full map sprite in view
+	# Zoom out to fit the full map sprite (including any child overlays like
+	# the "ASSEMBLY AREA" label) in view, and clamp camera movement so users
+	# can't pan past the map's combined bounds.
 	var map_sprite: Sprite2D = _current_map.get_node_or_null("MapSprite") as Sprite2D
 	if map_sprite != null:
-		camera.fit_sprite(map_sprite)
+		var map_rect: Rect2 = camera.get_sprite_bounds_including_children(map_sprite)
+		camera.set_limits(map_rect)
+		camera.fit_sprite_including_children(map_sprite)
 
 func _connect_room_signals(map_node: Node2D) -> void:
 	_connect_signals_from_container(map_node, "TouchZone")

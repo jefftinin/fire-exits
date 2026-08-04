@@ -68,9 +68,29 @@ var _target_zoom: float = 1.0
 ## (the original desktop behavior).
 @export var wheel_zoom_to_cursor: bool = false
 
+## When true, clamps the camera position so the visible world area stays
+## within the limits rect (set via `set_limits` or `manual_limits_rect`).
+## Useful to keep the view contained within a map sprite's bounds.
+@export var limits_enabled: bool = false
+
+## Extra margin (world px) added around the limits rect on each side. Positive
+## values expand the clamped area (allow panning a bit past the map's edges),
+## negative values inset it (tighter clamp). Editable in the inspector.
+@export var limits_margin: Vector2 = Vector2.ZERO
+
+## Optional rect used directly as the camera limits. If non-zero, this takes
+## precedence over the rect passed to `set_limits()` (which is normally the
+## map sprite's bounds). Lets you define custom clamp bounds in the editor
+## without touching the map sprite.
+@export var manual_limits_rect: Rect2 = Rect2()
+
+## World-space rect the camera is clamped inside while limits_enabled is true.
+var _limits_rect: Rect2 = Rect2()
+
 func _process(delta: float) -> void:
 	zoom = zoom.lerp(Vector2(_target_zoom, _target_zoom), zoom_smoothness * delta)
 	_process_fling(delta)
+	_apply_limits()
 
 # --- Zoom API ---------------------------------------------------------------
 
@@ -120,22 +140,151 @@ func _zoom_to_focal(screen_pos: Vector2, new_target_zoom: float) -> void:
 
 # --- Fitting -----------------------------------------------------------------
 
-func fit_sprite(sprite: Sprite2D) -> void:
+## Local-space rect of a Sprite2D in the sprite's own (pre-transform) frame,
+## accounting for its texture size, region cropping, centered flag, and offset.
+## The sprite's transform (position/rotation/scale) is NOT yet applied — callers
+## transform this by `sprite.global_transform` (or use get_sprite_world_rect).
+func _get_sprite_local_rect(sprite: Sprite2D) -> Rect2:
 	var texture := sprite.texture
 	if texture == null:
-		return
+		return Rect2()
 	var rect_size: Vector2
 	if sprite.region_enabled:
 		rect_size = sprite.region_rect.size
 	else:
 		rect_size = texture.get_size()
-	var world_size := rect_size * sprite.scale
-	var center_offset := sprite.offset
+	var offset := sprite.offset
 	if not sprite.centered:
-		center_offset += rect_size / 2.0
-	var world_center := sprite.position + center_offset * sprite.scale
-	var world_rect := Rect2(world_center - world_size / 2.0, world_size)
-	fit_rect(world_rect)
+		offset += rect_size / 2.0
+	return Rect2(offset - rect_size / 2.0, rect_size)
+
+## Transforms the 4 corners of `rect` by `xform` and returns the min/max
+## axis-aligned rect. Correct for rotation and non-uniform scale.
+func _transform_rect(rect: Rect2, xform: Transform2D) -> Rect2:
+	var bounds := Rect2(xform * rect.position, Vector2.ZERO)
+	bounds = bounds.expand(xform * (rect.position + Vector2(rect.size.x, 0.0)))
+	bounds = bounds.expand(xform * (rect.position + Vector2(rect.size.x, rect.size.y)))
+	bounds = bounds.expand(xform * (rect.position + Vector2(0.0, rect.size.y)))
+	return bounds
+
+## Returns the world-space rect occupied by `sprite`, accounting for its
+## texture, region cropping, offset, scale, and centered setting. Correct for
+## nested sprites (uses the sprite's global transform).
+func get_sprite_world_rect(sprite: Sprite2D) -> Rect2:
+	return _transform_rect(_get_sprite_local_rect(sprite), sprite.global_transform)
+
+## Returns the world-space visual bounds of `node` plus all of its descendants
+## by merging applicable node types recursively:
+##   - Sprite2D  → texture/region rect via its global transform
+##   - Control   → its global rect (e.g. Labels, TextureRects)
+##   - Polygon2D → its AABB via its global transform
+## Returns an empty Rect2 when no visual bounds are found.
+func _get_node_world_bounds(node: Node) -> Rect2:
+	var bounds := Rect2()
+	var has_bounds := false
+	if node is Sprite2D:
+		var sprite := node as Sprite2D
+		bounds = _transform_rect(_get_sprite_local_rect(sprite), sprite.global_transform)
+		has_bounds = true
+	elif node is Control:
+		var control := node as Control
+		bounds = control.get_global_rect()
+		has_bounds = true
+	elif node is Polygon2D:
+		var polygon := node as Polygon2D
+		var aabb: Rect2 = polygon.get_aabb()
+		bounds = _transform_rect(Rect2(aabb.position, aabb.size), polygon.global_transform)
+		has_bounds = true
+	for child in node.get_children():
+		var child_bounds := _get_node_world_bounds(child)
+		if child_bounds.size.x > 0.0 or child_bounds.size.y > 0.0:
+			if has_bounds:
+				bounds = bounds.merge(child_bounds)
+			else:
+				bounds = child_bounds
+				has_bounds = true
+	return bounds if has_bounds else Rect2()
+
+## Returns the combined world-space bounds of `sprite` and all of its
+## descendants (e.g. overlay labels that extend past the texture), so camera
+## limits/fits keep every visual child fully in view.
+func get_sprite_bounds_including_children(sprite: Sprite2D) -> Rect2:
+	var bounds := get_sprite_world_rect(sprite)
+	for child in sprite.get_children():
+		var child_bounds := _get_node_world_bounds(child)
+		if child_bounds.size.x > 0.0 or child_bounds.size.y > 0.0:
+			bounds = bounds.merge(child_bounds)
+	return bounds
+
+func fit_sprite(sprite: Sprite2D) -> void:
+	var texture := sprite.texture
+	if texture == null:
+		return
+	fit_rect(get_sprite_world_rect(sprite))
+
+## Fits the camera to the sprite's bounds including its descendants, so
+## overlay labels and other children are kept fully in view.
+func fit_sprite_including_children(sprite: Sprite2D) -> void:
+	if sprite.texture == null:
+		return
+	fit_rect(get_sprite_bounds_including_children(sprite))
+
+## Enables position limits, clamping the camera so its visible world-rect
+## stays within `rect`. Call `clear_limits()` to release the clamp.
+func set_limits(rect: Rect2) -> void:
+	_limits_rect = rect
+	limits_enabled = true
+	_apply_limits()
+
+## Disables camera position limits (previously set via `set_limits`).
+func clear_limits() -> void:
+	limits_enabled = false
+	_limits_rect = Rect2()
+
+## Returns the rect the camera is clamped inside: `manual_limits_rect` when
+## non-zero, otherwise the rect passed to `set_limits()` (e.g. the map sprite
+## bounds), then scaled by `limits_margin`.
+func _get_effective_limits_rect() -> Rect2:
+	var effective := _limits_rect
+	if manual_limits_rect.size.x != 0.0 or manual_limits_rect.size.y != 0.0:
+		effective = manual_limits_rect
+	# Expand/shrink on each side by the margin (negative insets the clamp).
+	return Rect2(
+		effective.position - limits_margin,
+		effective.size + limits_margin * 2.0
+	)
+
+## Clamps `position` so the camera's visible viewport stays within the limits
+## rect. If the viewport is larger than the limits rect on an axis, that axis
+## is centered on the rect (so the camera can't show empty space past the map
+## edges).
+func _apply_limits() -> void:
+	if not limits_enabled:
+		return
+	var viewport_size := get_viewport_rect().size
+	if viewport_size.x <= 0.0 or viewport_size.y <= 0.0:
+		return
+	var effective_rect := _get_effective_limits_rect()
+	if effective_rect.size.x <= 0.0 or effective_rect.size.y <= 0.0:
+		return
+	var half := viewport_size * 0.5 / zoom
+	var clamped_pos := position
+	# Horizontal clamp
+	var min_x := effective_rect.position.x + half.x
+	var max_x := effective_rect.end.x - half.x
+	if max_x < min_x:
+		# Viewport wider than the map rect → center on that axis.
+		clamped_pos.x = effective_rect.get_center().x
+	else:
+		clamped_pos.x = clampf(position.x, min_x, max_x)
+	# Vertical clamp
+	var min_y := effective_rect.position.y + half.y
+	var max_y := effective_rect.end.y - half.y
+	if max_y < min_y:
+		clamped_pos.y = effective_rect.get_center().y
+	else:
+		clamped_pos.y = clampf(position.y, min_y, max_y)
+	position = clamped_pos
 
 func fit_rect(world_rect: Rect2) -> void:
 	var viewport_size := get_viewport_rect().size
@@ -144,6 +293,7 @@ func fit_rect(world_rect: Rect2) -> void:
 	var fit_zoom: float = minf(viewport_size.x / world_rect.size.x, viewport_size.y / world_rect.size.y)
 	_set_target_zoom(fit_zoom * fit_zoom_scale)
 	position = world_rect.get_center()
+	_apply_limits()
 
 # --- Input control -----------------------------------------------------------
 

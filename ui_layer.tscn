@@ -119,6 +119,7 @@ alignment = 1
 
 [node name="HBoxContainer" type="HBoxContainer" parent="Control/VBoxContainer" unique_id=1069898254]
 layout_mode = 2
+mouse_filter = 2
 
 [node name="Sprite2D" type="TextureRect" parent="Control/VBoxContainer/HBoxContainer" unique_id=1602823272]
 layout_mode = 2
@@ -130,12 +131,24 @@ layout_mode = 2
 mouse_filter = 2
 texture = ExtResource("1_pxq32")
 
+[node name="RichTextLabel" type="RichTextLabel" parent="Control/VBoxContainer" unique_id=1046105699]
+layout_mode = 2
+mouse_filter = 1
+theme_override_colors/default_color = Color(0, 0, 0, 1)
+bbcode_enabled = true
+text = "Civil Aviation of the Philippines
+[font_size=11]Manila Control Tower Complex[/font_size]
+[color=#dd2222]Emergency Evacuation Plan[/color]"
+fit_content = true
+scroll_active = false
+horizontal_alignment = 1
+
 [node name="PanelContainer" type="PanelContainer" parent="Control/VBoxContainer" unique_id=72341783]
 layout_mode = 2
 
 [node name="MenuButton" type="Button" parent="Control/VBoxContainer/PanelContainer" unique_id=751376751]
 layout_mode = 2
-text = "About"
+text = "About the Project"
 
 [node name="AboutPanel" type="Control" parent="Control" unique_id=1590255501]
 visible = false
