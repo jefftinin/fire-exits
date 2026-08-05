@@ -5,7 +5,7 @@ extends Node2D
 @onready var marker: Control = $Marker
 @onready var exit_panel: Control = $ExitPanel
 @onready var circle_indicator: TextureRect = $ExitPanel/MarkerSprite
-@onready var maplist: ItemList = $UILayer/Control/ItemList
+@onready var maplist: ItemList = $UILayer/Control/CenterUI/ItemList
 @onready var camera: Camera2D = $Camera2D
 @onready var ui_layer: UILayer = $UILayer
 
@@ -61,6 +61,8 @@ func _ready() -> void:
 	# Populate the map list
 	for map_name in MAP_SCENES:
 		maplist.add_item(map_name)
+	# Arrange the items in a single horizontal row (one column per map).
+	maplist.max_columns = MAP_SCENES.size()
 	maplist.item_selected.connect(_on_map_selected)
 	
 	_trackline_index = trackline.get_index()
@@ -178,11 +180,21 @@ func _stop_breathing() -> void:
 ## arrow and track and launches the visible animated run (which drops its own
 ## low-density turn points and swaps them in on completion).
 func _on_probe_completed(bounds: Rect2) -> void:
-	camera.fit_rect_with_right_margin(bounds.grow(path_fit_padding), route_fit_right_margin)
+	camera.fit_rect_with_right_margin(bounds.grow(path_fit_padding), _get_route_fit_margin())
 	path_arrow.end_probe()
 	path_arrow.teleport_to(marker.global_position)
 	path_arrow.visible = true
 	trackline.visible = true
+
+## Right-edge margin (px) reserved for the route fit. On wide/landscape
+## screens it is the configured `route_fit_right_margin`; on narrow/portrait
+## screens it scales down proportionally so the right margin never swallows a
+## big chunk of the small viewport width (keeping the whole route in view).
+func _get_route_fit_margin() -> float:
+	var viewport_size := get_viewport_rect().size
+	if viewport_size.x <= 0.0:
+		return route_fit_right_margin
+	return minf(route_fit_right_margin, viewport_size.x * 0.3)
 
 ## Called when the arrow reaches the assembly point; shows the EXIT destination
 ## panel over the final resting spot.

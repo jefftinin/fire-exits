@@ -2,7 +2,7 @@ extends CanvasLayer
 class_name UILayer
 
 @onready var root_control: Control = $Control
-@onready var about_button: Button = $Control/VBoxContainer/PanelContainer/MenuButton
+@onready var about_button: Button = $"Control/VBoxContainer/About Button/MenuButton"
 @onready var about_panel: Control = $Control/AboutPanel
 @onready var about_dim: ColorRect = $Control/AboutPanel/Dim
 @onready var about_dialog: PanelContainer = $Control/AboutPanel/AboutDialog
@@ -21,7 +21,7 @@ class_name UILayer
 @onready var logo_vbox: VBoxContainer = $Control/VBoxContainer
 @onready var logo_sprite: TextureRect = $Control/VBoxContainer/HBoxContainer/Sprite2D
 @onready var logo_sprite2: TextureRect = $Control/VBoxContainer/HBoxContainer/Sprite2D2
-@onready var map_list: ItemList = $Control/ItemList
+@onready var map_list: ItemList = $Control/CenterUI/ItemList
 
 ## Emitted when a search result is selected. `room_name` is the selected
 ## room's name and `position` is its global world position so the main scene
@@ -38,6 +38,20 @@ var _matches: Array[Dictionary] = []
 
 ## Pixel margin from each screen edge (before safe-area is applied).
 @export var screen_margin: float = 12.0
+## When true, the whole UI scales proportionally with the viewport
+## (relative to base_resolution, clamped by min/max_ui_scale). When false
+## (default), UI elements keep a constant size and only re-anchor to their
+## screen edges as the window resizes.
+@export var scale_ui_with_viewport: bool = false
+## Reference resolution the layout was designed for. Only used when
+## scale_ui_with_viewport is true.
+@export var base_resolution: Vector2 = Vector2(1920, 1080)
+## Minimum UI scale factor. Prevents the UI from becoming unreadably small on
+## narrow portrait phones where a pure "fit" factor would shrink it too much.
+@export_range(0.4, 2.0, 0.05) var min_ui_scale: float = 0.75
+## Maximum UI scale factor. Prevents the UI from becoming comically large on
+## very large monitors.
+@export_range(1.0, 4.0, 0.05) var max_ui_scale: float = 1.5
 ## Maximum width of the search bar in px.
 @export var search_max_width: float = 384.0
 ## Maximum width of the map list in px.
@@ -59,6 +73,8 @@ var _matches: Array[Dictionary] = []
 var _safe_area: Dictionary = {"top": 0.0, "bottom": 0.0, "left": 0.0, "right": 0.0}
 var _safe_area_cache: Dictionary = {}
 var _last_viewport_size: Vector2 = Vector2.ZERO
+## Current scale applied to the whole UI layer, recomputed in _relayout().
+var _ui_scale: float = 1.0
 
 func _ready() -> void:
 	about_button.pressed.connect(_on_about_pressed)
@@ -96,14 +112,19 @@ func _update_safe_area() -> void:
 		# insets so desktop never blocks.
 		if DisplayServer.get_name() in ["Android", "iOS", "Web"]:
 			var area := DisplayServer.get_display_safe_area()
+			# Both the safe-area rect and the viewport size below are in
+			# physical pixels, so the inset math stays physical.
+			var vp_size := _viewport_size()
 			insets = {
 				"top": area.position.y,
-				"bottom": root_control.size.y - (area.position.y + area.size.y),
+				"bottom": vp_size.y - (area.position.y + area.size.y),
 				"left": area.position.x,
-				"right": root_control.size.x - (area.position.x + area.size.x),
+				"right": vp_size.x - (area.position.x + area.size.x),
 			}
+			# Convert physical-pixel insets to design space (divide by the UI
+			# scale) and add a small breathing margin before caching.
 			for k in insets:
-				insets[k] = maxf(0.0, insets[k] + 4.0)
+				insets[k] = maxf(0.0, insets[k] / _ui_scale + 4.0)
 		_safe_area_cache[key] = insets
 	_safe_area = insets
 
@@ -127,7 +148,29 @@ func _relayout() -> void:
 		return
 	_last_viewport_size = viewport_size
 
-	root_control.set_deferred("size", viewport_size)
+	# By default the UI keeps a constant size and simply re-anchors to the
+	# screen edges on resize. Optionally (scale_ui_with_viewport) apply a
+	# uniform scale so everything grows/shrinks proportionally, clamped to
+	# avoid an unreadable or comically large UI.
+	var scale_factor := 1.0
+	if scale_ui_with_viewport:
+		scale_factor = clampf(
+			minf(viewport_size.x / base_resolution.x, viewport_size.y / base_resolution.y),
+			min_ui_scale,
+			max_ui_scale
+		)
+	_ui_scale = scale_factor
+
+	# The root control's size covers the viewport (in its own design space,
+	# which equals viewport size when unscaled). Pin to the top-left corner
+	# and size it manually so container/anchor layout doesn't fight the scale.
+	var design_size := viewport_size / scale_factor
+	root_control.set_anchors_preset(Control.PRESET_TOP_LEFT)
+	root_control.position = Vector2.ZERO
+	root_control.pivot_offset = Vector2.ZERO
+	root_control.scale = Vector2(scale_factor, scale_factor)
+	root_control.size = design_size
+
 	_update_safe_area()
 
 	var safe_top: float = _safe_area["top"]
@@ -135,14 +178,8 @@ func _relayout() -> void:
 	var safe_left: float = _safe_area["left"]
 	var safe_right: float = _safe_area["right"]
 
-	var w: float = viewport_size.x
-	var h: float = viewport_size.y
-
-	# --- Map list (top-left) ---
-	var ml_width: float = minf(map_list_width, w - safe_left - safe_right - 2.0 * screen_margin)
-	var ml_height: float = minf(_map_list_content_height(), h - safe_top - safe_bottom - 2.0 * screen_margin)
-	map_list.position = Vector2(safe_left + screen_margin, safe_top + screen_margin)
-	map_list.size = Vector2(maxf(50.0, ml_width), maxf(50.0, ml_height))
+	var w: float = design_size.x
+	var h: float = design_size.y
 
 	# --- Logo stack (top-right) ---
 	var logo_rect := _measure_control(logo_vbox)
@@ -157,7 +194,13 @@ func _relayout() -> void:
 	logo_vbox.size = Vector2.ZERO  # VBox recomputes from children
 
 	# --- Zoom controls (right edge, below logos) ---
-	var logo_bottom: float = logo_vbox.global_position.y + logo_vbox.size.y
+	# Everything is laid out in design space (root_control is scaled to cover
+	# the viewport and sits at position Vector2.ZERO), so the logo stack's
+	# design-space bottom is its top plus its measured height (from
+	# _measure_control above). We can't use logo_vbox.size here because the
+	# container hasn't run a layout pass yet (its size is set to Vector2.ZERO
+	# below so the VBox recomputes it from its children).
+	var logo_bottom: float = logo_vbox.position.y + logo_rect.y
 	var zoom_top: float = maxf(logo_bottom + screen_margin, safe_top + screen_margin)
 	var zoom_left: float = w - safe_right - 44.0 - screen_margin
 	# Fit zoom panel into remaining vertical space
@@ -166,10 +209,10 @@ func _relayout() -> void:
 	zoom_controls.position = Vector2(zoom_left, zoom_top)
 	zoom_controls.size = Vector2(44.0, zoom_height)
 
-	# --- Search bar (top, right of the map list) ---
+	# --- Search bar (top-left) ---
 	var search_w: float = minf(search_max_width, w - safe_left - safe_right - 2.0 * screen_margin)
 	var search_h: float = 40.0
-	var search_x: float = map_list.position.x + map_list.size.x + screen_margin
+	var search_x: float = safe_left + screen_margin
 	var search_y: float = safe_top + screen_margin
 	search_panel.get_parent().position = Vector2(search_x, search_y)
 	search_panel.get_parent().size = Vector2(search_w, search_h)
@@ -179,12 +222,6 @@ func _relayout() -> void:
 		_update_list_geometry()
 
 	_apply_about_dialog_size()
-
-## Height needed to show every map list row (plus a little padding) so the
-## list hugs its content instead of leaving blank space below the entries.
-func _map_list_content_height() -> float:
-	var rows: int = maxi(map_list.item_count, 1)
-	return rows * row_height + 8.0
 
 ## Approximates a control's intrinsic size (used before layout has run).
 func _measure_control(c: Control) -> Vector2:
@@ -199,7 +236,8 @@ func _measure_control(c: Control) -> Vector2:
 func _apply_about_dialog_size() -> void:
 	if not about_panel.visible:
 		return
-	var vp := _viewport_size()
+	# Layout is in design space (root_control is scaled to cover the viewport).
+	var vp := root_control.size
 	var margin := 24.0
 	var max_w: float = maxf(240.0, vp.x - margin * 2.0)
 	var max_h: float = maxf(180.0, vp.y - margin * 2.0)
@@ -317,11 +355,12 @@ func _update_list_geometry() -> void:
 
 	var row_count := mini(_matches.size(), max_visible_rows)
 	var list_height: float = maxf(35.0, row_count * row_height)
-	# Cap so the list doesn't run off the bottom of the screen
+	# Cap so the list doesn't run off the bottom of the screen. Everything here
+	# is in design space because root_control is scaled to cover the viewport.
 	var search_ui: Control = search_panel.get_parent() as Control
-	var search_ui_bottom: float = search_ui.global_position.y + search_ui.size.y
-	var viewport_h: float = _viewport_size().y
-	var max_below: float = maxf(0.0, viewport_h - _safe_area["bottom"] - 4.0 - search_ui_bottom)
+	var search_ui_bottom: float = search_ui.position.y + search_ui.size.y
+	var design_h: float = root_control.size.y
+	var max_below: float = maxf(0.0, design_h - _safe_area["bottom"] - 4.0 - search_ui_bottom)
 	list_height = minf(list_height, max_below)
 	if list_height < 35.0:
 		list_height = 35.0

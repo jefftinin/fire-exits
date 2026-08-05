@@ -45,6 +45,10 @@ var _target_zoom: float = 1.0
 
 @export var drag_sensitivity: float = 1.0
 @export var zoom_min: float = 0.2
+## Lower zoom floor used when the viewport is taller than wide (portrait, e.g.
+## phones). Lets the camera zoom out further so the full map fits on narrow
+## screens. Landscape/desktop keep the regular `zoom_min`.
+@export var portrait_zoom_min: float = 0.05
 @export var zoom_max: float = 3.0
 @export var zoom_step: float = 0.1
 @export var zoom_smoothness: float = 8.0
@@ -137,8 +141,28 @@ func _cancel_interp() -> void:
 
 # --- Zoom API ---------------------------------------------------------------
 
+## Returns the lowest zoom allowed given the current viewport orientation:
+## `portrait_zoom_min` when the viewport is taller than wide, otherwise the
+## regular `zoom_min` (landscape/desktop floor).
+func _get_allowed_min_zoom() -> float:
+	var viewport_size := get_viewport_rect().size
+	if viewport_size.x <= 0.0 or viewport_size.y <= 0.0:
+		return zoom_min
+	if viewport_size.y > viewport_size.x:
+		return portrait_zoom_min
+	return zoom_min
+
 func _set_target_zoom(value: float) -> void:
-	_target_zoom = clampf(value, zoom_min, zoom_max)
+	_target_zoom = clampf(value, _get_allowed_min_zoom(), zoom_max)
+	zoom_changed.emit(_target_zoom)
+
+## Sets the target zoom for programmatic fits (`fit_rect`, `fit_sprite*`).
+## Unlike `_set_target_zoom`, this is NOT clamped by the user-facing zoom-out
+## floor (`_get_allowed_min_zoom`), so fits can always zoom out far enough to
+## show the whole rect regardless of screen size/orientation. Only a tiny
+## safety floor and `zoom_max` cap apply.
+func _set_fit_zoom(value: float) -> void:
+	_target_zoom = clampf(value, 0.01, zoom_max)
 	zoom_changed.emit(_target_zoom)
 
 func zoom_in() -> void:
@@ -176,7 +200,7 @@ func _zoom_to_focal(screen_pos: Vector2, new_target_zoom: float) -> void:
 		_set_target_zoom(new_target_zoom)
 		return
 	var old_zoom: float = _target_zoom
-	var clamped_new := clampf(new_target_zoom, zoom_min, zoom_max)
+	var clamped_new := clampf(new_target_zoom, _get_allowed_min_zoom(), zoom_max)
 	if is_equal_approx(clamped_new, old_zoom):
 		return
 	var focal_offset := screen_pos - viewport_size * 0.5
@@ -239,9 +263,14 @@ func _get_node_world_bounds(node: Node) -> Rect2:
 		has_bounds = true
 	elif node is Polygon2D:
 		var polygon := node as Polygon2D
-		var aabb: Rect2 = polygon.get_aabb()
-		bounds = _transform_rect(Rect2(aabb.position, aabb.size), polygon.global_transform)
-		has_bounds = true
+		var points: PackedVector2Array = polygon.polygon
+		if points.size() > 0:
+			var aabb := Rect2(points[0], Vector2.ZERO)
+			for i in range(1, points.size()):
+				aabb = aabb.expand(points[i])
+			aabb.position += polygon.offset
+			bounds = _transform_rect(aabb, polygon.global_transform)
+			has_bounds = true
 	for child in node.get_children():
 		var child_bounds := _get_node_world_bounds(child)
 		if child_bounds.size.x > 0.0 or child_bounds.size.y > 0.0:
@@ -309,9 +338,9 @@ func _get_effective_limits_rect() -> Rect2:
 func _get_limits_min_zoom(rect: Rect2) -> float:
 	var viewport_size := get_viewport_rect().size
 	if viewport_size.x <= 0.0 or viewport_size.y <= 0.0:
-		return zoom_min
+		return _get_allowed_min_zoom()
 	if rect.size.x <= 0.0 or rect.size.y <= 0.0:
-		return zoom_min
+		return _get_allowed_min_zoom()
 	return maxf(viewport_size.x / rect.size.x, viewport_size.y / rect.size.y)
 
 ## Clamps `position` so the camera's visible viewport stays within the limits
@@ -367,7 +396,7 @@ func fit_rect(world_rect: Rect2) -> void:
 	if viewport_size.x <= 0.0 or viewport_size.y <= 0.0 or world_rect.size.x <= 0.0 or world_rect.size.y <= 0.0:
 		return
 	var fit_zoom: float = minf(viewport_size.x / world_rect.size.x, viewport_size.y / world_rect.size.y)
-	_set_target_zoom(fit_zoom * fit_zoom_scale)
+	_set_fit_zoom(fit_zoom * fit_zoom_scale)
 	_arm_fit(world_rect.get_center())
 	_apply_limits()
 
@@ -383,7 +412,7 @@ func fit_rect_with_right_margin(world_rect: Rect2, right_screen_margin: float) -
 	var right_margin := maxf(right_screen_margin, 0.0)
 	var usable_width := maxf(viewport_size.x - right_margin, 1.0)
 	var target_zoom: float = minf(usable_width / world_rect.size.x, viewport_size.y / world_rect.size.y) * fit_zoom_scale
-	_set_target_zoom(target_zoom)
+	_set_fit_zoom(target_zoom)
 	# Shift the fit center right so the rect sits toward the left of the viewport,
 	# reserving the right margin: the rect's horizontal center should land on
 	# screen at usable_width/2 (i.e. `right_margin/2` from the left edge).

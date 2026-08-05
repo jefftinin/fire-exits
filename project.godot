@@ -20,13 +20,17 @@ config/icon="uid://jturd6uowpmy"
 
 [display]
 
-window/stretch/mode="canvas_items"
+window/stretch/mode="viewport"
 window/stretch/aspect="expand"
-window/handheld/orientation="sensor"
+window/handheld/orientation=6
 
 [editor_plugins]
 
 enabled=PackedStringArray("res://addons/minimize_html_build/plugin.cfg")
+
+[input_devices]
+
+pointing/emulate_touch_from_mouse=true
 
 [physics]
 
