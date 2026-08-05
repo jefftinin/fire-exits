@@ -6,19 +6,35 @@
 [ext_resource type="Texture2D" uid="uid://cdnfsouad78tf" path="res://assets/legend.png" id="4_s3viw"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_51ij6"]
-bg_color = Color(1, 1, 1, 1)
-border_color = Color(0.003921569, 0.003921569, 0.003921569, 1)
+bg_color = Color(0.9098039, 0.9294118, 0.972549, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.007843138, 0.15686275, 0.40784314, 1)
 corner_radius_top_left = 12
 corner_radius_top_right = 12
 corner_radius_bottom_right = 12
 corner_radius_bottom_left = 12
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_vtma8"]
-bg_color = Color(0.17641908, 0.17641911, 0.17641899, 1)
+bg_color = Color(0.9098039, 0.9294118, 0.972549, 1)
 border_width_left = 5
-border_color = Color(0.003519166, 0.0035191693, 0.0035191625, 1)
+border_color = Color(0.007843138, 0.15686275, 0.40784314, 1)
 corner_radius_top_left = 6
 corner_radius_bottom_left = 6
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_about"]
+bg_color = Color(0.9098039, 0.9294118, 0.972549, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.007843138, 0.15686275, 0.40784314, 1)
+corner_radius_top_left = 12
+corner_radius_top_right = 12
+corner_radius_bottom_right = 12
+corner_radius_bottom_left = 12
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_g7jja"]
 bg_color = Color(0.007843138, 0.15686275, 0.40784314, 1)
@@ -28,7 +44,7 @@ corner_radius_top_left = 6
 corner_radius_top_right = 6
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_s3viw"]
-bg_color = Color(1, 1, 1, 1)
+bg_color = Color(0.9098039, 0.9294118, 0.972549, 1)
 border_width_left = 2
 border_width_right = 2
 border_width_bottom = 2
@@ -56,7 +72,7 @@ anchor_left = 0.5
 anchor_right = 0.5
 offset_left = -176.0
 offset_right = 176.0
-offset_bottom = 110.0
+offset_bottom = 140.0
 grow_horizontal = 2
 
 [node name="CAAPLabel Container" type="PanelContainer" parent="Control/CenterUI" unique_id=1770336514]
@@ -78,24 +94,20 @@ scroll_active = false
 horizontal_alignment = 1
 
 [node name="ItemList" type="ItemList" parent="Control/CenterUI" unique_id=425106234]
-custom_minimum_size = Vector2(0, 60)
+custom_minimum_size = Vector2(0, 40)
 layout_mode = 2
 size_flags_horizontal = 4
 mouse_default_cursor_shape = 2
 auto_width = true
-auto_height = true
 same_column_width = true
 
-[node name="SearchUI" type="Control" parent="Control" unique_id=80647355]
-layout_mode = 1
-anchors_preset = 0
-offset_left = 214.0
-offset_top = 588.0
-offset_right = 598.0
-offset_bottom = 648.0
+[node name="SearchUI" type="Control" parent="Control/CenterUI" unique_id=80647355]
+custom_minimum_size = Vector2(352, 40)
+layout_mode = 2
+size_flags_horizontal = 4
 mouse_filter = 1
 
-[node name="SearchPanel" type="Panel" parent="Control/SearchUI" unique_id=1239433544]
+[node name="SearchPanel" type="Panel" parent="Control/CenterUI/SearchUI" unique_id=1239433544]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -103,19 +115,17 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="SearchInput" type="LineEdit" parent="Control/SearchUI/SearchPanel" unique_id=1831872872]
+[node name="SearchInput" type="LineEdit" parent="Control/CenterUI/SearchUI/SearchPanel" unique_id=1831872872]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_right = -34.0
 grow_horizontal = 2
 grow_vertical = 2
 placeholder_text = "Search Rooms..."
 metadata/_edit_use_anchors_ = true
 
-[node name="SuggestionsList" type="ItemList" parent="Control/SearchUI/SearchPanel" unique_id=863720616]
-visible = false
+[node name="SuggestionsList" type="ItemList" parent="Control/CenterUI/SearchUI/SearchPanel" unique_id=863720616]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -194,6 +204,15 @@ layout_mode = 2
 mouse_filter = 2
 texture = ExtResource("1_pxq32")
 
+[node name="Evac Procedures" type="PanelContainer" parent="Control/VBoxContainer" unique_id=674883319]
+layout_mode = 2
+size_flags_horizontal = 8
+theme_override_styles/panel = SubResource("StyleBoxFlat_vtma8")
+
+[node name="MenuButton" type="Button" parent="Control/VBoxContainer/Evac Procedures" unique_id=1869762410]
+layout_mode = 2
+text = "Evacuation Procedures"
+
 [node name="About Button" type="PanelContainer" parent="Control/VBoxContainer" unique_id=72341783]
 layout_mode = 2
 size_flags_horizontal = 8
@@ -234,6 +253,7 @@ offset_right = 320.0
 offset_bottom = 250.0
 grow_horizontal = 2
 grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_about")
 
 [node name="MarginContainer" type="MarginContainer" parent="Control/AboutPanel/AboutDialog" unique_id=1756300482]
 layout_mode = 2
@@ -252,6 +272,7 @@ anchor_bottom = 1.0
 offset_bottom = -44.0
 grow_horizontal = 2
 grow_vertical = 2
+theme_override_colors/default_color = Color(0, 0, 0, 1)
 bbcode_enabled = true
 text = "[center][font_size=24][b]MFCNS Fire Evacuation Project[/b][/font_size][/center]
 
@@ -325,8 +346,8 @@ anchor_left = 1.0
 anchor_top = 1.0
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_left = -266.0
-offset_top = -144.0
+offset_left = -352.0
+offset_top = -180.0
 offset_right = -8.0
 offset_bottom = -8.0
 grow_horizontal = 0
@@ -339,7 +360,7 @@ theme_override_styles/panel = SubResource("StyleBoxFlat_g7jja")
 
 [node name="RichTextLabel" type="RichTextLabel" parent="Control/VBoxContainer2/PanelContainer" unique_id=33275334]
 layout_mode = 2
-theme_override_font_sizes/normal_font_size = 12
+theme_override_font_sizes/normal_font_size = 15
 text = "EVACUATION PROCEDURE"
 fit_content = true
 horizontal_alignment = 1
@@ -351,7 +372,7 @@ theme_override_styles/panel = SubResource("StyleBoxFlat_s3viw")
 [node name="RichTextLabel" type="RichTextLabel" parent="Control/VBoxContainer2/PanelContainer2" unique_id=589105505]
 layout_mode = 2
 theme_override_colors/default_color = Color(0, 0, 0, 1)
-theme_override_font_sizes/normal_font_size = 9
+theme_override_font_sizes/normal_font_size = 12
 bbcode_enabled = true
 text = "- Leave through the nearest safe emergency exit.
 - Do not delay to collect personal belongings.

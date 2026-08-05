@@ -1,7 +1,6 @@
 [gd_scene format=3 uid="uid://wn20icx7db3f"]
 
-[ext_resource type="Texture2D" uid="uid://bdh6swc3w3rm6" path="res://assets/TOWER.jpg" id="1_stebd"]
-[ext_resource type="Texture2D" uid="uid://bq3qnjohdm6rp" path="res://assets/bgtower.webp" id="1_vedim"]
+[ext_resource type="Texture2D" uid="uid://doj3c0i5m4hk2" path="res://assets/TOWER.webp" id="1_vedim"]
 [ext_resource type="Script" uid="uid://blgk000347yrr" path="res://room.gd" id="2_stebd"]
 
 [sub_resource type="FontVariation" id="FontVariation_jbe1c"]
@@ -24,7 +23,7 @@ cell_size = 10.0
 [node name="MapSprite" type="Sprite2D" parent="." unique_id=57565109]
 position = Vector2(1462.0001, 779.99994)
 scale = Vector2(0.6243434, 0.6266132)
-texture = ExtResource("1_stebd")
+texture = ExtResource("1_vedim")
 region_enabled = true
 region_rect = Rect2(197, 1028, 4568, 1335)
 
@@ -41,23 +40,6 @@ text = "ASSEMBLY AREA"
 [node name="Polygon2D" type="Polygon2D" parent="MapSprite" unique_id=728176877]
 color = Color(0, 0, 0, 1)
 polygon = PackedVector2Array(2290.4063, 849.00867, 2373.6934, 849.00867, 2373.6934, 829.85803, 2412.1338, 861.77576, 2373.6934, 887.30994, 2373.6934, 868.1593, 2290.4063, 868.1593)
-
-[node name="MapSprite2" type="Sprite2D" parent="." unique_id=670976699]
-visible = false
-position = Vector2(1462.0001, 779.99994)
-scale = Vector2(0.6243434, 0.6266132)
-texture = ExtResource("1_vedim")
-region_enabled = true
-region_rect = Rect2(197, 1028, 4568, 1335)
-
-[node name="Label" type="Label" parent="MapSprite2" unique_id=2146899053]
-offset_left = 3851.2437
-offset_top = 954.43616
-offset_right = 4054.2441
-offset_bottom = 990.43616
-theme_override_colors/font_color = Color(0, 0, 0, 1)
-theme_override_font_sizes/font_size = 26
-text = "ASSEMBLY AREA"
 
 [node name="TouchZone" type="Node" parent="." unique_id=1390453206]
 

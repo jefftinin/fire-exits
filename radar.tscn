@@ -1,10 +1,19 @@
 [gd_scene format=3 uid="uid://d4hwgvdbg4a0j"]
 
-[ext_resource type="Texture2D" uid="uid://w0igc3vcjakq" path="res://assets/bgradar.webp" id="1_klbcc"]
-[ext_resource type="Texture2D" uid="uid://djsiw1usp37yp" path="res://assets/Radar-Plan.jpg" id="1_rlo7y"]
+[ext_resource type="Texture2D" uid="uid://du6o3q3e4mbbv" path="res://assets/Radar-Plan.webp" id="1_rlo7y"]
 [ext_resource type="Script" uid="uid://blgk000347yrr" path="res://room.gd" id="2_rlo7y"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_51ij6"]
+bg_color = Color(0.9098039, 0.9294118, 0.972549, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.007843138, 0.15686275, 0.40784314, 1)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
 
 [sub_resource type="FontVariation" id="FontVariation_rlo7y"]
 variation_embolden = 1.11
@@ -77,14 +86,6 @@ theme_override_colors/font_color = Color(0, 0, 0, 1)
 theme_override_fonts/font = SubResource("FontVariation_rlo7y")
 theme_override_font_sizes/font_size = 33
 text = "ASSEMBLY AREA"
-
-[node name="MapSprite2" type="Sprite2D" parent="." unique_id=101544399]
-visible = false
-position = Vector2(1462.0001, 779.99994)
-scale = Vector2(0.6243434, 0.6266132)
-texture = ExtResource("1_klbcc")
-region_enabled = true
-region_rect = Rect2(197, 625, 4568, 2247)
 
 [node name="TouchZone" type="Node" parent="." unique_id=232256808]
 
@@ -413,7 +414,7 @@ position = Vector2(1813.1101, 637.14984)
 [node name="Old Comms Room" type="Node2D" parent="Rooms" unique_id=1136884782]
 position = Vector2(2173.6902, 629.88983)
 
-[node name="Computer Room" type="Node2D" parent="Rooms" unique_id=1299168957]
+[node name="ANS Quarters" type="Node2D" parent="Rooms" unique_id=1299168957]
 position = Vector2(2115.6099, 887.61975)
 
 [node name="Lounge" type="Node2D" parent="Rooms" unique_id=1755926983]

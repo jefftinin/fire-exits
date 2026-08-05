@@ -14,9 +14,9 @@ class_name UILayer
 @onready var zoom_slider: VSlider = $Control/ZoomControls/ZoomPanel/ZoomVBox/ZoomSlider
 @onready var zoom_value_label: Label = $Control/ZoomControls/ZoomPanel/ZoomVBox/ZoomValueLabel
 
-@onready var search_input: LineEdit = $Control/SearchUI/SearchPanel/SearchInput
-@onready var search_panel: Panel = $Control/SearchUI/SearchPanel
-@onready var suggestions_list: ItemList = $Control/SearchUI/SearchPanel/SuggestionsList
+@onready var search_input: LineEdit = $Control/CenterUI/SearchUI/SearchPanel/SearchInput
+@onready var search_panel: Panel = $Control/CenterUI/SearchUI/SearchPanel
+@onready var suggestions_list: ItemList = $Control/CenterUI/SearchUI/SearchPanel/SuggestionsList
 
 @onready var logo_vbox: VBoxContainer = $Control/VBoxContainer
 @onready var logo_sprite: TextureRect = $Control/VBoxContainer/HBoxContainer/Sprite2D
@@ -209,14 +209,7 @@ func _relayout() -> void:
 	zoom_controls.position = Vector2(zoom_left, zoom_top)
 	zoom_controls.size = Vector2(44.0, zoom_height)
 
-	# --- Search bar (top-left) ---
-	var search_w: float = minf(search_max_width, w - safe_left - safe_right - 2.0 * screen_margin)
-	var search_h: float = 40.0
-	var search_x: float = safe_left + screen_margin
-	var search_y: float = safe_top + screen_margin
-	search_panel.get_parent().position = Vector2(search_x, search_y)
-	search_panel.get_parent().size = Vector2(search_w, search_h)
-
+	# --- Search bar (layout-managed inside CenterUI VBoxContainer) ---
 	# Reclamp suggestion list if it is currently visible
 	if suggestions_list.visible:
 		_update_list_geometry()
@@ -365,10 +358,9 @@ func _update_list_geometry() -> void:
 	if list_height < 35.0:
 		list_height = 35.0
 
-	# Anchor to the full panel rect, then shrink to the centered list width
-	var half_width := list_width * 0.5
-	if suggestions_list.size.x <= 0.0:
-		half_width = search_panel.size.x * 0.5
+	# Anchor to the full panel rect, then shrink to the search bar's width so
+	# the dropdown stays aligned with the compact search input.
+	var half_width: float = minf(list_width, search_panel.size.x) * 0.5
 	suggestions_list.set_anchor_and_offset(SIDE_LEFT, 0.5, -half_width)
 	suggestions_list.set_anchor_and_offset(SIDE_RIGHT, 0.5, half_width)
 	suggestions_list.set_anchor_and_offset(SIDE_TOP, 0.0, input_bottom + list_bottom_gap)
