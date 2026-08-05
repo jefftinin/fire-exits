@@ -1,21 +1,15 @@
 [gd_scene format=3 uid="uid://bmd2xbtcjixcu"]
 
-[ext_resource type="Texture2D" uid="uid://btwo43ynujl4i" path="res://assets/caaplogo-100.png" id="1_pxq32"]
 [ext_resource type="Texture2D" uid="uid://jturd6uowpmy" path="res://assets/manilacns100x.png" id="2_ibxbq"]
 [ext_resource type="Script" uid="uid://bf3bdcpojili8" path="res://ui_layer.gd" id="2_script"]
+[ext_resource type="Texture2D" uid="uid://b6mka0sx6bha3" path="res://assets/caaplogox100.png" id="3_s3viw"]
 [ext_resource type="Texture2D" uid="uid://cdnfsouad78tf" path="res://assets/legend.png" id="4_s3viw"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_51ij6"]
-bg_color = Color(0.9098039, 0.9294118, 0.972549, 1)
-border_width_left = 2
+bg_color = Color(1, 1, 1, 1)
 border_width_top = 2
-border_width_right = 2
 border_width_bottom = 2
 border_color = Color(0.007843138, 0.15686275, 0.40784314, 1)
-corner_radius_top_left = 12
-corner_radius_top_right = 12
-corner_radius_bottom_right = 12
-corner_radius_bottom_left = 12
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_vtma8"]
 bg_color = Color(0.9098039, 0.9294118, 0.972549, 1)
@@ -55,6 +49,8 @@ corner_radius_bottom_left = 6
 [node name="UILayer" type="CanvasLayer" unique_id=365944592]
 layer = 0
 script = ExtResource("2_script")
+scale_ui_with_viewport = true
+base_resolution = Vector2(1280, 720)
 
 [node name="Control" type="Control" parent="." unique_id=326597263]
 layout_mode = 3
@@ -87,7 +83,7 @@ theme_override_colors/default_color = Color(0, 0, 0, 1)
 theme_override_colors/font_outline_color = Color(1, 1, 1, 1)
 bbcode_enabled = true
 text = "[font_size=13]CIVIL AVIATION OF THE PHILIPPINES[/font_size]
-[font_size=10]MANILA CONTROL TOWER COMPLEX[/font_size]
+[font_size=10]MANILA CNS FACILITY[/font_size]
 [font_size=21][color=#dd2222]EMERGENCY EVACUATION PLAN[/color][/font_size]"
 fit_content = true
 scroll_active = false
@@ -194,17 +190,19 @@ alignment = 1
 layout_mode = 2
 mouse_filter = 2
 
-[node name="Sprite2D" type="TextureRect" parent="Control/VBoxContainer/HBoxContainer" unique_id=1602823272]
+[node name="Sprite2D" type="TextureRect" parent="Control/VBoxContainer/HBoxContainer" unique_id=1508289529]
 layout_mode = 2
 mouse_filter = 2
 texture = ExtResource("2_ibxbq")
 
-[node name="Sprite2D2" type="TextureRect" parent="Control/VBoxContainer/HBoxContainer" unique_id=701181398]
+[node name="Sprite2D2" type="TextureRect" parent="Control/VBoxContainer/HBoxContainer" unique_id=214097777]
 layout_mode = 2
 mouse_filter = 2
-texture = ExtResource("1_pxq32")
+texture = ExtResource("3_s3viw")
+expand_mode = 3
 
 [node name="Evac Procedures" type="PanelContainer" parent="Control/VBoxContainer" unique_id=674883319]
+visible = false
 layout_mode = 2
 size_flags_horizontal = 8
 theme_override_styles/panel = SubResource("StyleBoxFlat_vtma8")
@@ -283,7 +281,7 @@ text = "[center][font_size=24][b]MFCNS Fire Evacuation Project[/b][/font_size][/
 [/table][/center]
 
 [center][b]Civil Aviation Authority of the Philippines[/b]
-[i]Manila Control Tower Complex[/i]
+[i]Manila CNS Facility[/i]
 [b]Emergency Evacuation Plan[/b][/center]
 
 [b]Credits[/b]
