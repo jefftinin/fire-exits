@@ -3,6 +3,7 @@
 [ext_resource type="Texture2D" uid="uid://btwo43ynujl4i" path="res://assets/caaplogo-100.png" id="1_pxq32"]
 [ext_resource type="Texture2D" uid="uid://jturd6uowpmy" path="res://assets/manilacns100x.png" id="2_ibxbq"]
 [ext_resource type="Script" uid="uid://bf3bdcpojili8" path="res://ui_layer.gd" id="2_script"]
+[ext_resource type="Texture2D" uid="uid://cdnfsouad78tf" path="res://assets/legend.png" id="4_s3viw"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_51ij6"]
 bg_color = Color(1, 1, 1, 1)
@@ -17,6 +18,22 @@ bg_color = Color(0.17641908, 0.17641911, 0.17641899, 1)
 border_width_left = 5
 border_color = Color(0.003519166, 0.0035191693, 0.0035191625, 1)
 corner_radius_top_left = 6
+corner_radius_bottom_left = 6
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_g7jja"]
+bg_color = Color(0.007843138, 0.15686275, 0.40784314, 1)
+border_width_left = 2
+border_color = Color(0.007843138, 0.15686275, 0.40784314, 1)
+corner_radius_top_left = 6
+corner_radius_top_right = 6
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_s3viw"]
+bg_color = Color(1, 1, 1, 1)
+border_width_left = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.007843138, 0.15686275, 0.40784314, 1)
+corner_radius_bottom_right = 6
 corner_radius_bottom_left = 6
 
 [node name="UILayer" type="CanvasLayer" unique_id=365944592]
@@ -65,9 +82,9 @@ custom_minimum_size = Vector2(0, 60)
 layout_mode = 2
 size_flags_horizontal = 4
 mouse_default_cursor_shape = 2
-same_column_width = true
-auto_height = true
 auto_width = true
+auto_height = true
+same_column_width = true
 
 [node name="SearchUI" type="Control" parent="Control" unique_id=80647355]
 layout_mode = 1
@@ -287,3 +304,57 @@ grow_horizontal = 2
 grow_vertical = 0
 size_flags_horizontal = 4
 text = "Close"
+
+[node name="TextureRect" type="TextureRect" parent="Control" unique_id=1047682053]
+layout_mode = 1
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_top = -93.0
+offset_right = 189.15848
+grow_vertical = 0
+texture = ExtResource("4_s3viw")
+expand_mode = 1
+
+[node name="VBoxContainer2" type="VBoxContainer" parent="Control" unique_id=1889967378]
+layout_mode = 1
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -312.0
+offset_top = -149.0
+grow_horizontal = 0
+grow_vertical = 0
+theme_override_constants/separation = 0
+
+[node name="PanelContainer" type="PanelContainer" parent="Control/VBoxContainer2" unique_id=550785789]
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_g7jja")
+
+[node name="RichTextLabel" type="RichTextLabel" parent="Control/VBoxContainer2/PanelContainer" unique_id=33275334]
+layout_mode = 2
+theme_override_font_sizes/normal_font_size = 12
+text = "EVACUATION PROCEDURE"
+fit_content = true
+horizontal_alignment = 1
+
+[node name="PanelContainer2" type="PanelContainer" parent="Control/VBoxContainer2" unique_id=963847558]
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_s3viw")
+
+[node name="RichTextLabel" type="RichTextLabel" parent="Control/VBoxContainer2/PanelContainer2" unique_id=589105505]
+layout_mode = 2
+theme_override_colors/default_color = Color(0, 0, 0, 1)
+theme_override_font_sizes/normal_font_size = 10
+bbcode_enabled = true
+text = "- Leave through the nearest safe emergency exit.
+- Do not delay to collect personal belongings.
+- Do not run, push, or overtake.
+- Do not use elevators.
+- Assist persons needing help only when safe to do so.
+- Proceed directly to the designated assembly area.
+- Report to the floor marshal or designated accountability officer.
+- Do not re-enter until authorized."
+fit_content = true
