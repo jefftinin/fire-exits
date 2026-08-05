@@ -1,5 +1,9 @@
 extends Node2D
 
+## Set to true to enable the F12 "copy all deep-link URLs" debug feature
+## (web exports only).
+@export var f12_copy_deep_links_enabled: bool = true
+
 @onready var path_arrow: CharacterBody2D = $PathArrow
 @onready var trackline: Line2D = $Line2D
 @onready var marker: Control = $Marker
@@ -18,6 +22,12 @@ extends Node2D
 ## center of the viewport width minus this margin, keeping the path clear of
 ## the right-side UI (e.g. the zoom controls panel).
 @export var route_fit_right_margin: float = 250.0
+
+## Top-edge screen margin (px) reserved when the camera fits the probe route
+## extents (start → end points). The route's vertical center lands in the
+## center of the viewport height minus this margin, keeping the path clear of
+## a top header bar (e.g. the map/title bar).
+@export var route_fit_top_margin: float = 0.0
 
 
 ## Map name → scene path. Scenes are loaded lazily on first use so the web
@@ -88,6 +98,46 @@ func _ready() -> void:
 		get_tree().create_timer(0.0).timeout.connect(
 			func() -> void: _navigate_to_room_by_name(room_name)
 		)
+
+## Handles the F12 shortcut: collects every shareable deep-link URL for each
+## map + room combination and copies them all to the clipboard (web exports).
+func _unhandled_key_input(event: InputEvent) -> void:
+	if not f12_copy_deep_links_enabled:
+		return
+	if not OS.has_feature("web"):
+		return
+	if event is InputEventKey:
+		var key_event := event as InputEventKey
+		if key_event.pressed and not key_event.echo and key_event.keycode == KEY_F12:
+			var urls := _collect_all_deep_link_urls()
+			if urls.is_empty():
+				push_warning("F12: no deep-link URLs to copy")
+				return
+			var joined := "\n".join(urls)
+			DisplayServer.clipboard_set(joined)
+			get_viewport().set_input_as_handled()
+
+## Builds the full list of shareable deep-link URLs for every map/room
+## combination. Base is the current page origin+path, so links work regardless
+## of where the app is hosted. Room names are URI-encoded as in the live
+## navigation URL updates.
+func _collect_all_deep_link_urls() -> PackedStringArray:
+	var urls: PackedStringArray = []
+	var base: String = str(JavaScriptBridge.eval("window.location.origin + window.location.pathname"))
+	# Strip a trailing "/" so we never build "page/?map=...".
+	if base.ends_with("/"):
+		base = base.substr(0, base.length() - 1)
+	for map_name in MAP_SCENES:
+		var scene := _get_map_scene(map_name)
+		if scene == null:
+			continue
+		var instance := scene.instantiate() as Node2D
+		for room in _gather_rooms(instance):
+			var map_param := str(map_name).uri_encode()
+			var room_param := str(room["name"]).uri_encode()
+			urls.append("%s?map=%s&room=%s" % [base, map_param, room_param])
+		instance.free()
+	return urls
 
 func _get_url_params() -> Dictionary:
 	if not OS.has_feature("web"):
@@ -180,7 +230,7 @@ func _stop_breathing() -> void:
 ## arrow and track and launches the visible animated run (which drops its own
 ## low-density turn points and swaps them in on completion).
 func _on_probe_completed(bounds: Rect2) -> void:
-	camera.fit_rect_with_right_margin(bounds.grow(path_fit_padding), _get_route_fit_margin())
+	camera.fit_rect_with_right_margin(bounds.grow(path_fit_padding), _get_route_fit_margin(), route_fit_top_margin)
 	path_arrow.end_probe()
 	path_arrow.teleport_to(marker.global_position)
 	path_arrow.visible = true

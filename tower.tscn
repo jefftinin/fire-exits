@@ -264,3 +264,6 @@ position = Vector2(1977.8038, 1011.3169)
 
 [node name="FIC ANS Room" type="Node2D" parent="Rooms" unique_id=1160284395]
 position = Vector2(1752.4097, 1011.31696)
+
+[node name="Fire Escape" type="Node2D" parent="Rooms" unique_id=1498815451]
+position = Vector2(1455.4921, 603.9579)

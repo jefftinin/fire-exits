@@ -401,23 +401,28 @@ func fit_rect(world_rect: Rect2) -> void:
 	_apply_limits()
 
 ## Fits the camera to `world_rect` while reserving `right_screen_margin` px of
-## empty screen space along the right edge (e.g. for the zoom/UI panel). The
-## zoom is computed so the rect fits within the viewport width minus the margin,
-## and the camera shifts right so the rect's horizontal center lands in the
-## center of the left "usable" region. Margin is in screen pixels.
-func fit_rect_with_right_margin(world_rect: Rect2, right_screen_margin: float) -> void:
+## empty screen space along the right edge and (optionally) `top_screen_margin`
+## px along the top edge (e.g. for the zoom/UI panel or a header bar). The zoom
+## is computed so the rect fits within the viewport width minus the right margin
+## AND the viewport height minus the top margin, and the camera shifts so the
+## rect's center lands in the center of the remaining "usable" region, leaving
+## the margins empty. Margins are in screen pixels.
+func fit_rect_with_right_margin(world_rect: Rect2, right_screen_margin: float, top_screen_margin: float = 0.0) -> void:
 	var viewport_size := get_viewport_rect().size
 	if viewport_size.x <= 0.0 or viewport_size.y <= 0.0 or world_rect.size.x <= 0.0 or world_rect.size.y <= 0.0:
 		return
 	var right_margin := maxf(right_screen_margin, 0.0)
+	var top_margin := maxf(top_screen_margin, 0.0)
 	var usable_width := maxf(viewport_size.x - right_margin, 1.0)
-	var target_zoom: float = minf(usable_width / world_rect.size.x, viewport_size.y / world_rect.size.y) * fit_zoom_scale
+	var usable_height := maxf(viewport_size.y - top_margin, 1.0)
+	var target_zoom: float = minf(usable_width / world_rect.size.x, usable_height / world_rect.size.y) * fit_zoom_scale
 	_set_fit_zoom(target_zoom)
-	# Shift the fit center right so the rect sits toward the left of the viewport,
-	# reserving the right margin: the rect's horizontal center should land on
-	# screen at usable_width/2 (i.e. `right_margin/2` from the left edge).
+	# Shift the fit center right/down so the rect sits toward the top-left of the
+	# viewport, reserving the right and top margins: the rect's center should land
+	# on screen at (usable_width/2, usable_height/2). World offset = px offset / zoom.
 	var center := world_rect.get_center()
 	center.x += right_margin / (2.0 * target_zoom)
+	center.y -= top_margin / (2.0 * target_zoom)
 	_arm_fit(center)
 	_apply_limits()
 

@@ -29,6 +29,8 @@ corner_radius_bottom_left = 8
 
 [node name="Map" type="Node2D" unique_id=1545570361]
 script = ExtResource("1_lquwl")
+route_fit_right_margin = 300.0
+route_fit_top_margin = 100.0
 
 [node name="Camera2D" type="Camera2D" parent="." unique_id=117667258]
 limit_enabled = false
