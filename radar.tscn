@@ -483,3 +483,10 @@ position = Vector2(2322.9966, 409.16827)
 [node name="Toilet" type="Node2D" parent="Rooms/T and B 4" unique_id=35439772]
 
 [node name="Bath" type="Node2D" parent="Rooms/T and B 4" unique_id=1963395241]
+
+[node name="T and B 5" type="Node2D" parent="Rooms" unique_id=821530600]
+position = Vector2(141.2452, 1349.4414)
+
+[node name="Toilet" type="Node2D" parent="Rooms/T and B 5" unique_id=30004433]
+
+[node name="Bath" type="Node2D" parent="Rooms/T and B 5" unique_id=1088426596]
