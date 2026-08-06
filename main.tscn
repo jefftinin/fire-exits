@@ -8,6 +8,11 @@
 [ext_resource type="Shader" uid="uid://b0mkouthqsqbv" path="res://main.gdshader" id="6_7mycd"]
 [ext_resource type="Texture2D" uid="uid://b4jya4hqlhc8h" path="res://assets/icons8-map-pin-100.png" id="7_272bh"]
 [ext_resource type="Texture2D" uid="uid://diyio3xvniv7q" path="res://assets/circle.png" id="8_5vw27"]
+[ext_resource type="Script" path="res://scripts/animator.gd" id="9_animator"]
+[ext_resource type="Script" path="res://scripts/camera/zoom_controller.gd" id="10_zc"]
+[ext_resource type="Script" path="res://scripts/camera/fitter.gd" id="11_ft"]
+[ext_resource type="Script" path="res://scripts/camera/limits_controller.gd" id="12_lc"]
+[ext_resource type="Script" path="res://scripts/camera/gestures_controller.gd" id="13_gc"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_vtma8"]
 radius = 23.086792
@@ -40,12 +45,24 @@ limit_right = 3500
 limit_bottom = 2000
 limit_smoothed = true
 script = ExtResource("2_h2yge")
+
+[node name="ZoomController" type="Node" parent="Camera2D"]
+script = ExtResource("10_zc")
 portrait_zoom_min = 0.1
+
+[node name="Fitter" type="Node" parent="Camera2D"]
+script = ExtResource("11_ft")
 fit_zoom_scale = 0.9
-double_tap_zoom_in_factor = 1.0
-double_tap_zoom_out_factor = 0.5
+
+[node name="LimitsController" type="Node" parent="Camera2D"]
+script = ExtResource("12_lc")
 limits_enabled = true
 limits_margin = Vector2(500, 500)
+
+[node name="GesturesController" type="Node" parent="Camera2D"]
+script = ExtResource("13_gc")
+double_tap_zoom_in_factor = 1.0
+double_tap_zoom_out_factor = 0.5
 
 [node name="UILayer" parent="." unique_id=365944592 instance=ExtResource("3_272bh")]
 max_visible_rows = 6
@@ -116,6 +133,9 @@ layout_mode = 2
 theme_override_colors/font_color = Color(1, 1, 1, 1)
 text = "You are here!"
 horizontal_alignment = 1
+
+[node name="Animator" type="Node" parent="." unique_id=965704034]
+script = ExtResource("9_animator")
 
 [node name="ExitPanel" type="Control" parent="." unique_id=1393956250]
 layout_mode = 3

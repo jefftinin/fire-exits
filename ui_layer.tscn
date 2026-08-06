@@ -4,6 +4,7 @@
 [ext_resource type="Script" uid="uid://bf3bdcpojili8" path="res://scripts/ui_layer.gd" id="2_script"]
 [ext_resource type="Texture2D" uid="uid://b6mka0sx6bha3" path="res://assets/caaplogox100.png" id="3_s3viw"]
 [ext_resource type="Texture2D" uid="uid://cdnfsouad78tf" path="res://assets/legend.png" id="4_s3viw"]
+[ext_resource type="Script" path="res://scripts/ui/layout_controller.gd" id="5_layout"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_51ij6"]
 bg_color = Color(1, 1, 1, 1)
@@ -49,6 +50,11 @@ corner_radius_bottom_left = 6
 [node name="UILayer" type="CanvasLayer" unique_id=365944592]
 layer = 0
 script = ExtResource("2_script")
+scale_ui_with_viewport = true
+base_resolution = Vector2(1280, 720)
+
+[node name="LayoutController" type="Node" parent="."]
+script = ExtResource("5_layout")
 scale_ui_with_viewport = true
 base_resolution = Vector2(1280, 720)
 
