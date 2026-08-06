@@ -8,7 +8,6 @@ extends Node2D
 @onready var trackline: Line2D = $Line2D
 @onready var marker: Control = $Marker
 @onready var exit_panel: Control = $ExitPanel
-@onready var circle_indicator: TextureRect = $ExitPanel/MarkerSprite
 @onready var maplist: ItemList = $UILayer/Control/CenterUI/ItemList
 @onready var camera: Camera2D = $Camera2D
 @onready var ui_layer: UILayer = $UILayer

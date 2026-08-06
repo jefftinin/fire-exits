@@ -98,8 +98,3 @@ func zoom_to_focal(screen_pos: Vector2, new_target_zoom: float) -> void:
 ## ranges. Cheap approximation: lower sensitivity at high zoom, higher at low.
 func sensitivity_scale() -> float:
 	return clampf(1.0 / maxf(0.1, _target_zoom), 0.5, 2.0) * pinch_zoom_sensitivity * 100.0
-
-## Clamps `value` to the current user-facing zoom range (respecting portrait
-## floor). Used by external callers (e.g. fitter) that must respect the floor.
-func clamp_user_zoom(value: float) -> float:
-	return clampf(value, get_allowed_min_zoom(), zoom_max)

@@ -16,7 +16,8 @@ func _ready() -> void:
 	zoom_controller.zoom_changed.connect(func(value: float) -> void: zoom_changed.emit(value))
 
 func _process(delta: float) -> void:
-	zoom = zoom.lerp(Vector2(zoom_controller.get_target_zoom(), zoom_controller.get_target_zoom()), zoom_controller.zoom_smoothness * delta)
+	var target_zoom: float = zoom_controller.get_target_zoom()
+	zoom = zoom.lerp(Vector2(target_zoom, target_zoom), zoom_controller.zoom_smoothness * delta)
 	fitter.process_glide(delta)
 	gestures_controller.process_fling(delta)
 	limits_controller.apply_limits()

@@ -208,12 +208,6 @@ func _handle_screen_drag(sd: InputEventScreenDrag) -> void:
 			pass
 	get_viewport().set_input_as_handled()
 
-## Stable helper: converts a screen (viewport) position to world coordinates.
-func _screen_to_world(screen_pos: Vector2) -> Vector2:
-	if camera == null:
-		return screen_pos
-	return camera.position + (screen_pos - camera.get_viewport_rect().size * 0.5) / camera.zoom.x
-
 # --- Pinch -------------------------------------------------------------------
 
 ## Enters PINCH mode using the two currently tracked touches.

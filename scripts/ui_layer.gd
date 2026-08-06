@@ -48,12 +48,6 @@ var _matches: Array[Dictionary] = []
 @export_range(0.4, 2.0, 0.05) var min_ui_scale: float = 0.75
 ## Maximum UI scale factor.
 @export_range(1.0, 4.0, 0.05) var max_ui_scale: float = 1.5
-## Maximum width of the search bar in px.
-@export var search_max_width: float = 384.0
-## Maximum width of the map list in px.
-@export var map_list_width: float = 160.0
-## Maximum height of the map list in px.
-@export var map_list_height: float = 200.0
 ## Vertical gap between the list bottom and the top of the search input.
 @export var list_bottom_gap: float = 8.0
 ## Maximum number of rows displayed before the list stops growing upward.

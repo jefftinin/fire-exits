@@ -35,9 +35,6 @@ var _ui_scale: float = 1.0
 @export var list_bottom_gap: float = 8.0
 @export var max_visible_rows: int = 10
 @export var row_height: float = 30.0
-@export var search_max_width: float = 384.0
-## Maximum width of the search bar in px. (Kept for parity.)
-@export var map_list_width: float = 160.0
 
 ## Points the component at all the UI controls it positions/sizes.
 func init(ui: Dictionary) -> void:
