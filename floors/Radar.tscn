@@ -1,7 +1,7 @@
 [gd_scene format=3 uid="uid://d4hwgvdbg4a0j"]
 
 [ext_resource type="Texture2D" uid="uid://du6o3q3e4mbbv" path="res://assets/Radar-Plan.webp" id="1_rlo7y"]
-[ext_resource type="Script" uid="uid://blgk000347yrr" path="res://room.gd" id="2_rlo7y"]
+[ext_resource type="Script" uid="uid://blgk000347yrr" path="res://scripts/room.gd" id="2_rlo7y"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_51ij6"]
 bg_color = Color(0.9098039, 0.9294118, 0.972549, 1)

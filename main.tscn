@@ -1,10 +1,10 @@
 [gd_scene format=3 uid="uid://o3n2qhxv1pe8"]
 
-[ext_resource type="Script" uid="uid://dt76m3ywpuxtx" path="res://main.gd" id="1_lquwl"]
-[ext_resource type="Script" uid="uid://dkhlkn7oflv3v" path="res://camera_2d.gd" id="2_h2yge"]
+[ext_resource type="Script" uid="uid://dt76m3ywpuxtx" path="res://scripts/main.gd" id="1_lquwl"]
+[ext_resource type="Script" uid="uid://dkhlkn7oflv3v" path="res://scripts/camera_2d.gd" id="2_h2yge"]
 [ext_resource type="PackedScene" uid="uid://bmd2xbtcjixcu" path="res://ui_layer.tscn" id="3_272bh"]
 [ext_resource type="Texture2D" uid="uid://c0pd8pbnhynwj" path="res://icon.svg" id="4_1bvp3"]
-[ext_resource type="Script" uid="uid://bnxoev3el0o5o" path="res://path_arrow.gd" id="5_lquwl"]
+[ext_resource type="Script" uid="uid://bnxoev3el0o5o" path="res://scripts/path_arrow.gd" id="5_lquwl"]
 [ext_resource type="Shader" uid="uid://b0mkouthqsqbv" path="res://main.gdshader" id="6_7mycd"]
 [ext_resource type="Texture2D" uid="uid://b4jya4hqlhc8h" path="res://assets/icons8-map-pin-100.png" id="7_272bh"]
 [ext_resource type="Texture2D" uid="uid://diyio3xvniv7q" path="res://assets/circle.png" id="8_5vw27"]

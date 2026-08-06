@@ -2,7 +2,7 @@ extends Node2D
 
 ## Set to true to enable the F12 "copy all deep-link URLs" debug feature
 ## (web exports only).
-@export var f12_copy_deep_links_enabled: bool = true
+@export var f12_copy_deep_links_enabled: bool = false
 
 @onready var path_arrow: CharacterBody2D = $PathArrow
 @onready var trackline: Line2D = $Line2D
@@ -31,11 +31,11 @@ extends Node2D
 
 
 ## Map name → scene path. Scenes are loaded lazily on first use so the web
-## export only downloads the active map, not all of them at startup.
-const MAP_SCENES: Dictionary = {
-	"Radar": "res://radar.tscn",
-	"Tower": "res://tower.tscn",
-}
+## export only downloads the active map, not all of them at startup. Populated
+## automatically at runtime by scanning MAPS_DIR for .tscn files.
+const MAPS_DIR := "res://floors/"
+
+var MAP_SCENES: Dictionary = {}
 
 ## Cache of loaded map scenes by name. Populated on demand to keep the
 ## initial download small.
@@ -49,6 +49,9 @@ var _exit_tween: Tween = null
 var _exit_breath_tween: Tween = null
 
 func _ready() -> void:
+
+	# Scan res://floors/ for map scenes before anything else uses MAP_SCENES.
+	_populate_map_scenes()
 
 	# White background for the whole 2D world (fills any resolution automatically,
 	# never tied to UI or world-element backgrounds).
@@ -80,10 +83,14 @@ func _ready() -> void:
 	# Read URL params for deep-linking (web export). Only read on initial load.
 	var params := _get_url_params()
 	
-	# Map selection: ?map=Radar or ?map=Tower
-	var map_name: String = str(params.get("map", "Radar"))
+	# Map selection: ?map=<name>, defaulting to the first map found in
+	# MAP_SCENES if the param is missing or unknown.
+	var map_name: String = str(params.get("map", ""))
 	if not MAP_SCENES.has(map_name):
-		map_name = "Radar"
+		map_name = MAP_SCENES.keys()[0] if not MAP_SCENES.is_empty() else ""
+		if map_name.is_empty():
+			push_error("No map scenes found in %s" % MAPS_DIR)
+			return
 	# Select it in the map list dropdown
 	for i in range(maplist.item_count):
 		if maplist.get_item_text(i) == map_name:
@@ -98,6 +105,33 @@ func _ready() -> void:
 		get_tree().create_timer(0.0).timeout.connect(
 			func() -> void: _navigate_to_room_by_name(room_name)
 		)
+
+## Scans MAPS_DIR for .tscn files and populates MAP_SCENES with
+## "display name" → "path". Called early in _ready() so the map list,
+## deep-link handling, and map loading all see the same entries.
+##
+## The display name is the filename sans ".tscn", first letter capitalized,
+## everything else preserved verbatim — so "radar.tscn" → "Radar",
+## "Tower 1.tscn" → "Tower 1", "assembly_area.tscn" → "Assembly_area",
+## "lobby&hall.tscn" → "Lobby&hall". Filenames with spaces, hyphens, or
+## other symbols keep those characters in the name. The dropdown label and
+## the deep-link (?map=...) both use this exact string.
+func _populate_map_scenes() -> void:
+	MAP_SCENES.clear()
+	var dir := DirAccess.open(MAPS_DIR)
+	if dir == null:
+		push_error("Could not open map scenes directory: %s" % MAPS_DIR)
+		return
+	dir.list_dir_begin()
+	var file_name := dir.get_next()
+	while file_name != "":
+		if not dir.current_is_dir() and file_name.ends_with(".tscn"):
+			var scene_name := file_name.get_basename()
+			if scene_name.length() > 0:
+				scene_name = scene_name[0].to_upper() + scene_name.substr(1)
+			MAP_SCENES[scene_name] = MAPS_DIR + file_name
+		file_name = dir.get_next()
+	dir.list_dir_end()
 
 ## Handles the F12 shortcut: collects every shareable deep-link URL for each
 ## map + room combination and copies them all to the clipboard (web exports).
