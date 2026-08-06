@@ -81,7 +81,7 @@ func _ready() -> void:
 	_trackline_index = trackline.get_index()
 	
 	# Read URL params for deep-linking (web export). Only read on initial load.
-	var params := _get_url_params()
+	var params := URLUtils.get_params()
 	
 	# Map selection: ?map=<name>, defaulting to the first map found in
 	# MAP_SCENES if the param is missing or unknown.
@@ -143,7 +143,7 @@ func _unhandled_key_input(event: InputEvent) -> void:
 	if event is InputEventKey:
 		var key_event := event as InputEventKey
 		if key_event.pressed and not key_event.echo and key_event.keycode == KEY_F12:
-			var urls := _collect_all_deep_link_urls()
+			var urls := URLUtils.collect_deep_link_urls(MAP_SCENES, RoomUtils.gather_rooms)
 			if urls.is_empty():
 				push_warning("F12: no deep-link URLs to copy")
 				return
@@ -151,49 +151,13 @@ func _unhandled_key_input(event: InputEvent) -> void:
 			DisplayServer.clipboard_set(joined)
 			get_viewport().set_input_as_handled()
 
-## Builds the full list of shareable deep-link URLs for every map/room
-## combination. Base is the current page origin+path, so links work regardless
-## of where the app is hosted. Room names are URI-encoded as in the live
-## navigation URL updates.
-func _collect_all_deep_link_urls() -> PackedStringArray:
-	var urls: PackedStringArray = []
-	var base: String = str(JavaScriptBridge.eval("window.location.origin + window.location.pathname"))
-	# Strip a trailing "/" so we never build "page/?map=...".
-	if base.ends_with("/"):
-		base = base.substr(0, base.length() - 1)
-	for map_name in MAP_SCENES:
-		var scene := _get_map_scene(map_name)
-		if scene == null:
-			continue
-		var instance := scene.instantiate() as Node2D
-		for room in _gather_rooms(instance):
-			var map_param := str(map_name).uri_encode()
-			var room_param := str(room["name"]).uri_encode()
-			urls.append("%s?map=%s&room=%s" % [base, map_param, room_param])
-		instance.free()
-	return urls
-
-func _get_url_params() -> Dictionary:
-	if not OS.has_feature("web"):
-		return {}
-	var raw: String = JavaScriptBridge.eval("window.location.search")
-	var params := {}
-	var query := raw.trim_prefix("?")
-	if query.is_empty():
-		return params
-	for pair in query.split("&"):
-		var parts := pair.split("=", true, 1)
-		if parts.size() == 2:
-			params[parts[0].uri_decode()] = parts[1].uri_decode()
-	return params
-
 ## Navigates to a room by name/alias on the currently loaded map. Matching is
 ## case-insensitive and also checks alias names, consistent with search.
 func _navigate_to_room_by_name(room_name: String) -> void:
 	var target := room_name.strip_edges()
 	if target.is_empty() or _current_map == null:
 		return
-	for room in _gather_rooms(_current_map):
+	for room in RoomUtils.gather_rooms(_current_map):
 		if str(room["name"]).to_lower() == target.to_lower():
 			navigate_to(room["position"])
 			return
@@ -301,26 +265,13 @@ func _on_room_selected(room_name: String, position: Vector2) -> void:
 func _update_url_for_map(map_name: String) -> void:
 	if not OS.has_feature("web"):
 		return
-	_update_url_query("map", map_name)
+	URLUtils.update_query("map", map_name)
 
 ## Updates the URL's `room` parameter on web exports.
 func _update_url_for_room(room_name: String) -> void:
 	if not OS.has_feature("web"):
 		return
-	_update_url_query("room", room_name)
-
-## Rebuilds ?map=...&room=... keeping existing params, then updates the URL.
-func _update_url_query(key: String, value: String) -> void:
-	var params := _get_url_params()
-	if value.is_empty():
-		params.erase(key)
-	else:
-		params[key] = value
-	var query_parts: PackedStringArray = []
-	for k in params:
-		query_parts.append("%s=%s" % [str(k).uri_encode(), str(params[k]).uri_encode()])
-	var new_query := "?" + "&".join(query_parts)
-	JavaScriptBridge.eval("history.replaceState(null, '', '%s')" % new_query)
+	URLUtils.update_query("room", room_name)
 
 ## Pops the red EXIT panel in at the given world position using the same
 ## transition as the marker, then breathes the whole panel (circle + text)
@@ -401,67 +352,19 @@ func _load_map(map_name: String) -> void:
 	move_child(_current_map, _trackline_index -1 )
 	
 	# Connect room signals for the new map
-	_connect_room_signals(_current_map)
+	RoomUtils.connect_room_signals(_current_map, _on_room_clicked)
 	
 	# Refresh navigation targets so PathArrow can find exits/assemblies in the new map
 	path_arrow.refresh_targets()
 	
 	# Populate the search input with searchable room entries from this map
-	ui_layer.set_rooms(_gather_rooms(_current_map))
+	ui_layer.set_rooms(RoomUtils.gather_rooms(_current_map))
 	
 	# Zoom out to fit the full map sprite (including any child overlays like
 	# the "ASSEMBLY AREA" label) in view, and clamp camera movement so users
 	# can't pan past the map's combined bounds.
 	var map_sprite: Sprite2D = _current_map.get_node_or_null("MapSprite") as Sprite2D
 	if map_sprite != null:
-		var map_rect: Rect2 = camera.get_sprite_bounds_including_children(map_sprite)
+		var map_rect: Rect2 = BoundsUtils.get_sprite_bounds_including_children(map_sprite)
 		camera.set_limits(map_rect)
 		camera.fit_sprite_including_children(map_sprite)
-
-func _connect_room_signals(map_node: Node2D) -> void:
-	_connect_signals_from_container(map_node, "TouchZone")
-	_connect_signals_from_container(map_node, "Assembly Areas")
-
-func _connect_signals_from_container(map_node: Node2D, container_name: String) -> void:
-	var container := map_node.get_node_or_null(container_name)
-	if container == null:
-		return
-	for child in container.get_children():
-		if child is Room:
-			if not child.room_clicked.is_connected(_on_room_clicked):
-				child.room_clicked.connect(_on_room_clicked)
-
-func _disconnect_room_signals(map_node: Node2D) -> void:
-	_disconnect_signals_from_container(map_node, "TouchZone")
-	_disconnect_signals_from_container(map_node, "Assembly Areas")
-
-## Collects searchable room entries from the active map's "Rooms" container.
-## Each entry is { "name": String, "position": Vector2, "aliases": Array[String] }.
-## Room child node names are included as search aliases/alternate names.
-func _gather_rooms(map_node: Node2D) -> Array[Dictionary]:
-	var rooms: Array[Dictionary] = []
-	var container := map_node.get_node_or_null("Rooms")
-	if container == null:
-		return rooms
-	for child in container.get_children():
-		if child is Node2D:
-			var node2d := child as Node2D
-			# Child node names act as search aliases/alternate names for this room
-			var aliases: Array[String] = []
-			for alias_node in node2d.get_children():
-				aliases.append(alias_node.name)
-			rooms.append({
-				"name": node2d.name,
-				"position": node2d.global_position,
-				"aliases": aliases,
-			})
-	return rooms
-
-func _disconnect_signals_from_container(map_node: Node2D, container_name: String) -> void:
-	var container := map_node.get_node_or_null(container_name)
-	if container == null:
-		return
-	for child in container.get_children():
-		if child is Room:
-			if child.room_clicked.is_connected(_on_room_clicked):
-				child.room_clicked.disconnect(_on_room_clicked)
