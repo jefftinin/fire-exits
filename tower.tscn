@@ -53,11 +53,6 @@ room_info = "Room containing things"
 visible = false
 polygon = PackedVector2Array(99.152756, 389.9865, 1243.1527, 389.9865, 1243.1527, 681.9865, 1495.1527, 681.9865, 1495.1527, 593.9865, 1383.1527, 589.9865, 1295.1527, 513.9865, 1279.1527, 421.9865, 1327.1527, 329.9865, 1383.1527, 297.9865, 1435.1527, 285.9865, 1483.1527, 297.9865, 1531.1527, 321.9865, 1571.1527, 365.9865, 1575.1527, 377.9865, 1575.1527, 389.9865, 2779.1528, 389.9865, 2779.1528, 957.9865, 99.152756, 957.9865)
 
-[node name="Assembly Areas" type="Node" parent="." unique_id=1287978730]
-
-[node name="Assembly Area" type="Node2D" parent="Assembly Areas" unique_id=1067740716 groups=["Assembly"]]
-position = Vector2(2923.3274, 1329.1827)
-
 [node name="NavigationRegion2D" type="NavigationRegion2D" parent="." unique_id=85268325]
 navigation_polygon = SubResource("NavigationPolygon_kek77")
 navigation_layers = 65535
@@ -78,6 +73,11 @@ affect_navigation_mesh = true
 [node name="NavigationRegion2D2" type="NavigationRegion2D" parent="." unique_id=1673597107]
 navigation_polygon = SubResource("NavigationPolygon_vedim")
 navigation_layers = 65535
+
+[node name="Assembly Areas" type="Node" parent="." unique_id=1287978730]
+
+[node name="Assembly Area" type="Node2D" parent="Assembly Areas" unique_id=1067740716 groups=["Assembly"]]
+position = Vector2(2923.3274, 1329.1827)
 
 [node name="Exits" type="Node2D" parent="." unique_id=1526819891]
 

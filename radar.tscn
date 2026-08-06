@@ -101,17 +101,6 @@ polygon = PackedVector2Array(31.152756, 1289.9866, 583.1528, 1289.9866, 579.1528
 [node name="CollisionPolygon2D2" type="CollisionPolygon2D" parent="TouchZone/map" unique_id=1923154482]
 polygon = PackedVector2Array(1311.1527, 1153.9866, 2823.1528, 1153.9866, 2823.1528, 137.98651, 2175.1528, 137.98651, 2175.1528, -30.013481, 1947.1527, -30.013481, 1947.1527, 141.98651, 1311.1527, 141.98651)
 
-[node name="Assembly Areas" type="Node" parent="." unique_id=1106072746]
-
-[node name="Assembly Area" type="Node2D" parent="Assembly Areas" unique_id=680772434 groups=["Assembly"]]
-position = Vector2(928, 916)
-
-[node name="Assembly Area2" type="Node2D" parent="Assembly Areas" unique_id=728082039 groups=["Assembly"]]
-position = Vector2(1621.9172, 1375.659)
-
-[node name="Assembly Area3" type="Node2D" parent="Assembly Areas" unique_id=22445521 groups=["Assembly"]]
-position = Vector2(2308.184, 1375.6593)
-
 [node name="NavigationRegion2D" type="NavigationRegion2D" parent="." unique_id=1778582270]
 navigation_polygon = SubResource("NavigationPolygon_brh4u")
 navigation_layers = 65535
@@ -191,6 +180,17 @@ affect_navigation_mesh = true
 [node name="bldga10" type="NavigationObstacle2D" parent="NavigationRegion2D" unique_id=322415269]
 vertices = PackedVector2Array(2152, 436, 2200, 436, 2200, 468, 2152, 468)
 affect_navigation_mesh = true
+
+[node name="Assembly Areas" type="Node" parent="." unique_id=1106072746]
+
+[node name="Assembly Area" type="Node2D" parent="Assembly Areas" unique_id=680772434 groups=["Assembly"]]
+position = Vector2(928, 916)
+
+[node name="Assembly Area2" type="Node2D" parent="Assembly Areas" unique_id=728082039 groups=["Assembly"]]
+position = Vector2(1621.9172, 1375.659)
+
+[node name="Assembly Area3" type="Node2D" parent="Assembly Areas" unique_id=22445521 groups=["Assembly"]]
+position = Vector2(2308.184, 1375.6593)
 
 [node name="Exits" type="Node2D" parent="." unique_id=682362073]
 
