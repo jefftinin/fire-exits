@@ -10,7 +10,7 @@ config_version=5
 
 [application]
 
-config/name="MFCNS Fire Exit Project"
+config/name="Manila CNS Fire Evac"
 run/main_scene="uid://o3n2qhxv1pe8"
 config/features=PackedStringArray("4.7", "GL Compatibility")
 run/max_fps=60

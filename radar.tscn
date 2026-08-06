@@ -378,7 +378,7 @@ position = Vector2(1189.3143, 276.81897)
 [node name="Radar Equipment Room" type="Node2D" parent="Rooms" unique_id=2146070012]
 position = Vector2(184, 504)
 
-[node name="Comms Equiment Room" type="Node2D" parent="Rooms" unique_id=1016521892]
+[node name="Comms Equipment Room" type="Node2D" parent="Rooms" unique_id=1016521892]
 position = Vector2(465.21002, 429.41998)
 
 [node name="UPS Room" type="Node2D" parent="Rooms" unique_id=1170125930]
@@ -455,3 +455,31 @@ position = Vector2(2326.3225, 855.8016)
 
 [node name="Main Lobby" type="Node2D" parent="Rooms" unique_id=1692666284]
 position = Vector2(2342.042, 1148.9226)
+
+[node name="T and B 1" type="Node2D" parent="Rooms" unique_id=1409651188]
+position = Vector2(1715.6246, 352.562)
+
+[node name="Toilet" type="Node2D" parent="Rooms/T and B 1" unique_id=2086781147]
+
+[node name="Bath" type="Node2D" parent="Rooms/T and B 1" unique_id=1908533485]
+
+[node name="T and B 2" type="Node2D" parent="Rooms" unique_id=993073274]
+position = Vector2(1947.8494, 326.48334)
+
+[node name="Toilet" type="Node2D" parent="Rooms/T and B 2" unique_id=548169762]
+
+[node name="Bath" type="Node2D" parent="Rooms/T and B 2" unique_id=615368807]
+
+[node name="T and B 3" type="Node2D" parent="Rooms" unique_id=1998873837]
+position = Vector2(2293.1921, 349.55988)
+
+[node name="Toilet" type="Node2D" parent="Rooms/T and B 3" unique_id=303034335]
+
+[node name="Bath" type="Node2D" parent="Rooms/T and B 3" unique_id=944136609]
+
+[node name="T and B 4" type="Node2D" parent="Rooms" unique_id=615698296]
+position = Vector2(2322.9966, 409.16827)
+
+[node name="Toilet" type="Node2D" parent="Rooms/T and B 4" unique_id=35439772]
+
+[node name="Bath" type="Node2D" parent="Rooms/T and B 4" unique_id=1963395241]
